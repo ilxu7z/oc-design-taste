@@ -809,6 +809,37 @@ export function RevealStagger({ items }: { items: string[] }) {
 - **Layout Transitions** — 用 Motion `layout` / `layoutId`，不包裹静态内容
 - **Staggered Orchestration** — 用 `staggerChildren`（Motion）或 CSS `animation-delay: calc(var(--index) * 100ms)`
 
+### 5.F Motion-Engine Bento（微动效卡片原型）
+
+当生成现代 SaaS Dashboard 或 Feature Section 时，可用此 Bento 2.0 架构。它超越静态卡片，依赖 perpetual physics 实现 premium 动效。
+
+#### 5.F.A 设计哲学
+- **美学**：高端、极简、功能优先
+- **色板**：背景 `#f9fafb`，卡片纯白 `#ffffff`，1px 边框 `border-slate-200/50`
+- **表面**：`rounded-[2.5rem]` 主容器，扩散阴影 `shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]`
+- **排版**：Geist / Satoshi / Cabinet Grotesk，标题 `tracking-tight`
+- **标签**：标题和描述在卡片**外部下方**，保持画廊式干净展示
+- **内边距**：`p-8` 或 `p-10`
+
+#### 5.F.B 动画引擎规格（Perpetual Motion）
+所有卡片必须包含**永久微交互**，用 Framer Motion 原则：
+- **Spring Physics**：`type: "spring", stiffness: 100, damping: 20`，无 linear easing
+- **Layout Transitions**：`layout` 和 `layoutId` 实现平滑重排/缩放/共享元素过渡
+- **Infinite Loops**：每张卡片有一个无限循环的
+
+#### 5.F.C 5 种卡片原型（微动效规格）
+在构建 Bento Grid 时实现以下微动效：
+
+1. **The Intelligent List** — 垂直列表项无限自动排序循环。用 `layoutId` 让项平滑交换位置，模拟 AI 实时优先级排序
+2. **The Command Input** — 搜索/AI 栏带多步打字机效果。循环展示复杂提示词，含闪烁光标和 shimmer 渐变加载状态
+3. **The Live Status** — 调度界面带"呼吸"状态指示器。含弹出通知徽章，带 Overshoot spring 效果，停留 3 秒后消失
+4. **The Wide Data Stream** — 水平"无限轮播"数据卡片或指标。无缝循环（`x: ["0%", "-100%"]`），速度轻松不费力
+5. **The Contextual UI (Focus Mode)** — 文档视图，文字块交错高亮动画，随后浮动操作工具栏"飘入"带微图标
+
+**性能关键：** 任何 perpetual motion 或 infinite loop 必须 memoized（React.memo）并完全隔离在独立的微型 Client Component 中。绝不在父布局中触发 re-render。
+
+**突破条件：** 打印/邮件模板、或 MOTION ≤ 2
+
 ---
 
 ## 6. Performance & Accessibility Guardrails（性能与无障碍护栏）
@@ -842,7 +873,6 @@ export function RevealStagger({ items }: { items: string[] }) {
 
 ### 6.F Z-Index 约束
 禁止随意 `z-50` / `z-10`。z-index 仅用于系统层级上下文（sticky nav、modal、overlay、grain）。在项目常量文件中记录 z-index 层级。
-
 
 ---
 
