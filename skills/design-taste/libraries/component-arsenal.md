@@ -459,3 +459,49 @@ SVG 路径从起点到终点动态绘制。
 | **Three.js / WebGL** | Canvas 背景、3D 场景、粒子系统 | 不与 Motion 在同一组件树 |
 
 **铁律：** 一个组件树只用一种动画库。GSAP/Three.js 隔离在专用叶子组件中，带 `useEffect` 清理函数。
+
+---
+
+## Agent UI 组件模式
+
+> 融合 A2UI 邻接表思维。完整规范见 `domains/agent-ui.md` + `knowledge/declarative-ui.md`。
+
+### A-1. AgentCard（Agent 内嵌卡片）
+
+Agent 在对话/面板中输出的紧凑信息卡片。
+
+- **描述：** 轻量级卡片，用于 Chat 内嵌展示工具结果、数据摘要、操作提示。边界清晰（border），信息密度高，1-2 个明确操作按钮。
+- **适用场景：** AI Chat 富卡片、Copilot 侧边栏、工具调用结果。
+- **三旋钮建议：** VARIANCE 3-4 / MOTION 2-3 / DENSITY 5-7
+
+### A-2. ToolResultPanel（工具结果面板）
+
+工具调用后的结构化结果展示。
+
+- **描述：** 带状态指示器（success/error/partial）的结果面板。核心数据格式化展示，JSON 折叠可展开。状态用语义色点（绿/红/琥珀）。
+- **适用场景：** API 调用结果、数据库查询结果、文件操作结果。
+- **三旋钮建议：** VARIANCE 4-5 / MOTION 3-4 / DENSITY 6-8
+
+### A-3. SkeletonAdapter（骨架适配器）
+
+匹配最终布局形状的骨架屏组件。
+
+- **描述：** 根据 UI 结构动态生成匹配尺寸的骨架占位。不是通用 spinner，而是精确复刻最终布局的骨架形状。用 CSS `@keyframes` + shimmer 效果。
+- **适用场景：** Agent 生成 UI 的加载态、异步数据加载、分步展示的中间态。
+- **三旋钮建议：** VARIANCE 1-10 / MOTION 2-5 / DENSITY 匹配最终布局
+
+### A-4. IncrementalBuilder（增量构建器）
+
+分步展示复杂 UI 的交互模式。
+
+- **描述：** 复杂 UI 不一次性全量展示，而是分 4 步渐进：骨架 → 核心内容 → 交互激活 → 次要内容+装饰。每步之间有短暂延迟（100-200ms），给用户"正在构建"的感知。
+- **适用场景：** Agent 生成长页面、多区块内容、复杂表单。
+- **三旋钮建议：** VARIANCE 3-5 / MOTION 4-6 / DENSITY 匹配最终布局
+
+### A-5. DataBoundWidget（数据绑定组件）
+
+结构稳定、数据可替换的组件模式。
+
+- **描述：** A2UI 的核心启发——组件骨架不变，通过 props/状态切换仅更新数据层。适合 Agent 需要频繁刷新同一 UI 结构但改变内容的场景（如实时数据面板、搜索结果翻页）。
+- **适用场景：** 实时数据展示、分步表单、搜索结果。
+- **三旋钮建议：** VARIANCE 3-5 / MOTION 3-5 / DENSITY 4-7

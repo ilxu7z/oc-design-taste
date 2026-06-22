@@ -284,3 +284,4 @@ v1 的固化只写入 SKILL.md。v2 的固化写入**正确的文件**：
 |------|------|
 | 2026-06-06 | v1 创建：三层架构 + 数据结构 + 归因模型 |
 | 2026-06-22 | v2 升级：适配 v6 模块化架构，新增 Domain 路由归因，策略→文件路由，文件体系维护规则 |
+| 2026-06-23 | v2.1：融入 A2UI 理论，新增 knowledge/declarative-ui.md + domains/agent-ui.md，SKILL.md 增加 Agent UI 安全纪律（§4.F）和 Pre-Flight 扩展（§6.G），component-arsenal 新增 5 个 Agent UI 组件模式 |

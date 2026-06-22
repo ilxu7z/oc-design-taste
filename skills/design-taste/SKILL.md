@@ -77,6 +77,10 @@ OEM品牌官网 × 双受众 × 自然专业
 | 邮件深蓝 Header + 灰底 Footer | 邮件模板 AI 默认 | 品牌色本身就是深蓝 |
 | em-dash 装饰文案 | LLM 文案痕迹 | **零例外——永远禁止** |
 | 三列等宽卡片 testimonials + 圆点 | 最常见 AI 痕迹 | 用户明确要求 |
+| 深度嵌套 div（4+ 层）| Agent UI 生成时 LLM 递归惯性 | 邻接表思维，语义组件 ≤3 层 |
+| 组件内硬编码内容 | 数据/结构不分离 | props 传入或数据文件分离 |
+| 工具结果直接 dump JSON | 懒人展示 | 格式化为可视 UI 卡片 |
+| 自创通用组件名（InfoBox 等）| Agent 不走白名单 | 只用标准组件清单 |
 
 ---
 
@@ -137,6 +141,10 @@ VISUAL_DENSITY: 4（标准密度，不拥挤不空旷）
 | **移动端 Landing Page** | 5-7 | 4-6 | 3-5 | imagegen-frontend |
 | **移动端 App UI** | 4-6 | 6-8 | 4-6 | imagegen-frontend |
 | **前端设计生图** | 5-8 | 1 | 3-4 | imagegen-frontend |
+| **Agent 生成 UI（Chat 卡片）** | 3-4 | 2-3 | 5-7 | agent-ui |
+| **Agent Copilot 面板** | 3-4 | 3-4 | 5-7 | agent-ui |
+| **Agent 工具结果可视化** | 4-5 | 3-4 | 6-8 | agent-ui |
+| **Agent 生成完整页面** | 5-7 | 4-6 | 3-5 | agent-ui |
 | **旧项目改造** | 维持原值 | +2 | 维持原值 | redesign |
 
 ### 旋钮值驱动设计决策
@@ -185,6 +193,7 @@ VISUAL_DENSITY: 4（标准密度，不拥挤不空旷）
 | `imagegen-frontend` | `domains/imagegen-frontend.md` | 前端设计生图、Mobile UI 生图、图转码 |
 | `redesign` | `domains/redesign.md` | 旧项目改造/Redesign |
 | `dashboard` | `domains/dashboard.md` | Dashboard、B端SaaS 后台、数据展示 |
+| `agent-ui` | `domains/agent-ui.md` | AI Agent 生成 UI、Chat 富卡片、工具结果可视化、Copilot 面板 |
 
 ### 美学预设加载
 
@@ -211,6 +220,7 @@ VISUAL_DENSITY: 4（标准密度，不拥挤不空旷）
 | 色彩禁令/替代方案/品牌色策略 | `knowledge/color-science.md` |
 | 设计系统速查/安装命令 | `knowledge/design-systems.md` |
 | 理解 AI 懒惰行为根因 | `knowledge/ai-laziness.md` |
+| 声明式 UI 理论（A2UI 邻接表/安全模型/数据流） | `knowledge/declarative-ui.md` |
 
 ---
 
@@ -335,7 +345,23 @@ VISUAL_DENSITY: 4（标准密度，不拥挤不空旷）
 - **❌ 禁止感叹号成功消息：** "Saved!" 不是 "Saved successfully! 🎉"
 - **用主动语态，不用被动语态**
 
-### 4.F 交互状态纪律
+### 4.F Agent UI 安全纪律
+
+> Agent 直接生成 UI 代码时的额外安全约束。完整规范见 `domains/agent-ui.md` §5。
+
+| 规则 | 说明 |
+|------|------|
+| **❌ 永远禁止 `dangerouslySetInnerHTML`** | XSS 注入风险 |
+| **❌ 永远禁止 `eval()` / `innerHTML`** | 代码注入 |
+| **❌ 永远禁止 inline event handler 字符串** | 用 JSX onClick |
+| **❌ 永远禁止动态拼接 src URL** | 图片/脚本来源必须可信 |
+| **❌ 永远禁止外部 script 引入** | 供应链攻击 |
+| **✅ div 嵌套 ≤ 3 层** | 超过则语义化提取组件 |
+| **✅ 数据与结构分离** | 硬编码内容必须提取为 props/data |
+| **✅ 组件白名单思维** | 只用标准组件，不发明新组件 |
+| **✅ 邻接表思维** | 复杂 UI 先列清单再逐个生成 |
+
+### 4.G 交互状态纪律
 
 | 状态 | 要求 |
 |------|------|
@@ -461,7 +487,18 @@ VISUAL_DENSITY: 4（标准密度，不拥挤不空旷）
 - [ ] 动画只用 transform + opacity
 - [ ] 无 `window.addEventListener('scroll')`
 
-### 6.G 性能与无障碍
+### 6.G Agent UI 安全检查（agent-ui Domain 时强制）
+- [ ] 无 `dangerouslySetInnerHTML`
+- [ ] 无 `eval()` / `innerHTML`
+- [ ] 无 inline event handler 字符串
+- [ ] div 嵌套 ≤ 3 层
+- [ ] 组件白名单合规（无自创通用组件）
+- [ ] 数据与结构分离（无硬编码内容在组件内）
+- [ ] 工具结果已格式化（非原始 JSON dump）
+- [ ] 所有链接 href 安全（无 `javascript:`）
+- [ ] 所有图片有 alt + 尺寸占位
+
+### 6.H 性能与无障碍
 - [ ] Grain/noise 只在 fixed 伪元素
 - [ ] z-index 有系统化层级
 - [ ] 无障碍：focus ring、alt text、语义 HTML
