@@ -474,3 +474,72 @@ function ToolResult({ tool, status, data, summary }: ToolResultProps) {
 - 画册 / 品牌手册（用 `domains/b2b-print`）
 
 如果 Brief 是以上之一，**明确说出来**，指向正确领域文件。
+
+---
+
+## 11. A2UI 输出模式
+
+> **前提知识**：本章节需要 `knowledge/declarative-ui.md` 的内容支撑。
+
+### 11.1 何时输出 A2UI JSON vs 直接代码
+
+| 场景 | 输出格式 | 理由 |
+|------|---------|------|
+| **Agent 跨信任边界输出 UI** | A2UI JSON | 安全——Agent 不直接发送可执行代码 |
+| **远程子 Agent 返回富 UI** | A2UI JSON | Surface 隔离，每个 Agent 独立 Surface |
+| **Chat 内嵌富交互卡片** | A2UI JSON 或 React 组件 | 取决于宿主是否支持 A2UI 渲染器 |
+| **单信任域内 Agent 直接写代码** | React/HTML/CSS | 直接控制，无跨信任边界风险 |
+| **人类维护的开源项目** | React/HTML/CSS | 人类需要可读可维护的代码 |
+| **完整页面开发（Landing/Product）** | React/HTML/CSS | 复杂页面需要完整工程能力 |
+| **工具调用结果展示** | A2UI JSON（推荐） | 标准化输出，宿主渲染器统一处理 |
+
+### 11.2 A2UI JSON 输出规范
+
+当决定输出 A2UI JSON 时，遵循以下规范：
+
+#### 消息序列选择
+
+| UI 复杂度 | 推荐方式 | 消息数 |
+|----------|---------|-------|
+| **简单（≤3 组件）** | Single-Message（createSurface 内嵌） | 1 条 |
+| **中等（4-15 组件）** | createSurface + updateComponents | 2 条 |
+| **复杂（15+ 组件）** | createSurface + 多次 updateComponents | 3+ 条 |
+| **需要数据填充** | 额外 updateDataModel | +1 条 |
+
+#### 组件使用规则
+
+1. **必须有一个 `root` 组件** — Surface 的根节点
+2. **子组件通过 ID 引用** — 不内联子组件定义
+3. **Card 只接受单个 child** — 多子组件需要先包裹在 Column/Row 中
+4. **Button 必须有 child 和 action** — child 通常是 Text 组件
+5. **TextField 必须有 label** — 输入框标签不可省略
+
+#### 标准 A2UI JSON 模板
+
+```jsonl
+// 消息1: 创建 Surface（Single-Message 模式）
+{"version":"v1.0","createSurface":{"surfaceId":"example_1","catalogId":"https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json","components":[{"id":"root","component":"Column","children":["title_1","desc_1","cta_row"],"justify":"start"},{"id":"title_1","component":"Text","text":"任务完成"},{"id":"desc_1","component":"Text","text":{"path":"/summary"},"variant":"caption"},{"id":"cta_row","component":"Row","children":["cta_btn"],"justify":"end"},{"id":"cta_btn","component":"Button","child":"cta_label","variant":"primary","action":{"event":{"name":"viewDetails"}}},{"id":"cta_label","component":"Text","text":"查看详情"}],"dataModel":{"summary":"3 个任务已成功处理"}}}
+```
+
+### 11.3 Catalog 选择策略
+
+| Catalog | 何时使用 | Agent 需要知道的 |
+|---------|---------|-----------------|
+| **Basic Catalog** | 通用场景、快速原型、Chat 卡片 | 18 组件 + 14 函数，详见 `knowledge/a2ui-catalog-reference.md` |
+| **自定义 Catalog** | 品牌化应用、复杂 SaaS | 组件名/属性/函数由开发团队定义，Agent 需要读取该 Catalog 的 instructions |
+| **Smart Wrapper** | 需要嵌入已有 React/SwiftUI 组件 | 包装已有组件为 A2UI 兼容，安全边界由开发者控制 |
+
+**铁律**：Agent 输出的 A2UI JSON **必须**符合目标 Catalog 的 Schema。不符合 Schema 的 JSON 会被客户端拒绝渲染。
+
+### 11.4 A2UI 输出的 Pre-Flight 特殊检查
+
+除标准 Pre-Flight Check（§6）外，A2UI 输出需额外检查：
+
+- [ ] Surface ID 全局唯一（不与已有 Surface 冲突）
+- [ ] 存在且仅存在一个 `id: "root"` 组件
+- [ ] 所有子组件引用（child/children 中的 ID）在同一 Surface 中已定义
+- [ ] 数据绑定路径（path）指向 DataModel 中存在的字段
+- [ ] Card 的 child 是单个 ComponentId，不是数组
+- [ ] Button 同时有 child 和 action
+- [ ] 版本号正确：`"version": "v1.0"`
+- [ ] catalogId 与目标渲染器支持的 Catalog 匹配
