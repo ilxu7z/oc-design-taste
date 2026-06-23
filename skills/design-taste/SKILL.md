@@ -220,7 +220,8 @@ VISUAL_DENSITY: 4（标准密度，不拥挤不空旷）
 | 色彩禁令/替代方案/品牌色策略 | `knowledge/color-science.md` |
 | 设计系统速查/安装命令 | `knowledge/design-systems.md` |
 | 理解 AI 懒惰行为根因 | `knowledge/ai-laziness.md` |
-| 声明式 UI 理论（A2UI 邻接表/安全模型/数据流） | `knowledge/declarative-ui.md` |
+| 声明式 UI 理论（A2UI v1.0 协议/邻接表/安全模型/数据流） | `knowledge/declarative-ui.md` |
+| A2UI v1.0 组件/函数/属性速查 | `knowledge/a2ui-catalog-reference.md` |
 
 ---
 
