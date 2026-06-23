@@ -378,3 +378,146 @@ Server                                    Client
 - A2UI Renderer Guide: https://a2ui.org/specification/v1_0/docs/renderer_guide.md
 - A2UI GitHub: https://github.com/a2ui-project/a2ui
 - A2UI 官方文档: https://a2ui.org
+
+---
+
+## §8. 协议版本演进与 Breaking Changes
+
+A2UI 协议经历了从 v0.8 到 v1.0 的四次迭代，每次迭代都基于 LLM 生成 UI 的实际痛点进行重构。理解演进脉络有助于 Agent 生成兼容特定版本的 Payload。
+
+### §8.1 v0.8 基线：Structured Output First
+
+v0.8 是 A2UI 的首个公开协议版本，设计哲学是 **Structured Output / Function Calling 优先**——适配支持严格 JSON 模式的 LLM。
+
+**四种核心消息类型**：
+
+| 消息 | 方向 | 职责 |
+|------|------|------|
+| `beginRendering` | Server→Client | 信号：初始组件已发完，可以渲染；包含 `root` ID 和 `styles` |
+| `surfaceUpdate` | Server→Client | 添加/更新组件（扁平列表，但组件类型用嵌套 key 包装） |
+| `dataModelUpdate` | Server→Client | 更新数据模型（邻接表格式：`[{key, valueString}]`） |
+| `deleteSurface` | Server→Client | 删除 Surface |
+
+**嵌套组件语法**（v0.8 特征——组件类型作为 key 包装）：
+
+```json
+{
+  "id": "title",
+  "component": {
+    "Text": {
+      "text": { "literalString": "Hello" },
+      "usageHint": "h3"
+    }
+  }
+}
+```
+
+**数据绑定语法**：
+
+| 写法 | 含义 |
+|------|------|
+| `{ "literalString": "foo" }` | 字面量字符串 |
+| `{ "literalNumber": 42 }` | 字面量数字 |
+| `{ "path": "/user/name" }` | JSON Pointer 绑定 |
+
+**四种基本组件**：Row, Column, Text, Image（另有 Card, Button, List, Modal 等扩展组件）。`children` 用 `explicitList`/`childrenProperty` 定义，`userAction` 作为客户端事件消息，无 `version` 字段要求。
+
+### §8.2 v0.8 → v0.9 变更：Prompt First 大重构
+
+v0.9 是**哲学级变更**——从 "Structured Output First" 转向 **"Prompt First"**。Schema 重新设计为更 token 高效、更易于 LLM 理解的格式。
+
+| 变更领域 | v0.8 | v0.9 | 原因 |
+|----------|------|------|------|
+| **消息重命名** | `beginRendering` | `createSurface` | 语义更准确 |
+| | `surfaceUpdate` | `updateComponents` | 动词-名词一致 |
+| | `dataModelUpdate` | `updateDataModel` | 简化命名 |
+| **扁平化组件** | `{"Text": {"text": ...}}` 嵌套包装 | `"component": "Text", "text": ...` 扁平化 | LLM 更容易一致生成 |
+| **数据绑定** | `{ "literalString": ... }` / `{ "path": ... }` | 原生 JSON 类型 + `{ "path": ... }` | 减少冗余包装 |
+| **新增 theme** | `styles: { primaryColor }` | `theme: { primaryColor }` | 统一主题属性 |
+| **version 必填** | 无要求 | `"version": "v0.9"` | 协议版本显式声明 |
+| **functions 数组** | 组件和函数分开 | 统一 Catalog，functions 为数组 | 简化能力协商 |
+| **Dynamic Types** | 无 | DynamicString/Number/Boolean 等 | 统一绑定语法 |
+| **sendDataModel** | 隐式 | `createSurface.sendDataModel: true` | 显式数据同步控制 |
+| **children 语法** | `explicitList` / `childrenProperty` | `ChildList`（array 或 object） | 统一子组件引用 |
+| **Action 事件** | `userAction` | `action` | 简化命名 |
+| **Button variant** | `primary: true` (boolean) | `variant: "primary"` (enum) | 更灵活的样式系统 |
+| **TextField** | `textFieldType` + `validationRegexp` | `variant` + `checks` | 统一验证机制 |
+| **ChoicePicker** | `MultipleChoice` + `maxAllowedSelections` | `variant: "mutuallyExclusive"` / `"multipleSelection"` | 语义更清晰 |
+| **Row/Column** | `distribution` / `alignment` | `justify` / `align` | 标准化命名 |
+
+### §8.3 v0.9 → v0.9.1 变更：小幅修正
+
+v0.9.1 是 v0.9 的微小修正版本，**完全向后兼容**（Schema 同时接受 `"v0.9"` 和 `"v0.9.1"`）：
+
+| 变更 | 说明 |
+|------|------|
+| **MIME Type 标准化** | `application/json+a2ui` → `application/a2ui+json`（符合 IANA 规范） |
+| **surfaceId 唯一性放宽** | 从"渲染器生命周期内全局唯一"放宽为"当前活跃 Surface 中唯一" |
+
+迁移方式：更新 MIME 类型引用即可，其他无变更。
+
+### §8.4 v0.9.1 → v1.0 变更：双向 RPC + 品牌解耦
+
+v1.0 是**功能级大版本**，引入双向 RPC 和多项架构改进。
+
+| 变更领域 | v0.9.1 | v1.0 | 影响 |
+|----------|--------|------|------|
+| **theme → surfaceProperties** | `theme: { primaryColor }` | `surfaceProperties`（布局与品牌分离） | 移除 `primaryColor`，视觉属性由 Catalog 定义 |
+| **primaryColor 移除** | 在 theme 中 | 从 Catalog Schema 中删除 | 品牌色通过自定义 Catalog 注入 |
+| **functions array → map** | `functions: [...]` 数组 | `functions: { "name": {...} }` 映射 | 函数定义按键名索引 |
+| **actionResponse 新增** | 无 | Server→Client 同步响应 action | 支持 action + response RPC |
+| **callFunction 新增** | 无 | Server→Client 调用客户端函数 | 双向 RPC 完整闭环 |
+| **functionResponse 新增** | 无 | Client→Server 返回函数结果 | |
+| **callableFrom 从 wire 移除** | 在 FunctionCall 中 | 移至 Catalog 静态定义 | 运行时查 Catalog 验证 |
+| **returnType 从 wire 移除** | 在 FunctionCall 中 | 移至 Catalog 静态定义 | |
+| **UAX#31 命名强制** | 无约束 | 组件名/函数名/参数键必须符合 UAX#31 | 正则：XID_Start + XID_Continue |
+| **@index 系统函数** | 无 | List 模板中返回当前索引，`@` 前缀保留 | 仅在 Collection Scope 中可用 |
+| **Single-Message UI** | 需 createSurface + updateComponents + updateDataModel | createSurface 可内嵌 components + dataModel | 一条消息完成 UI 构建 |
+| **instructions 字段** | 外部 `rules.txt` | Catalog 内嵌 `instructions` (Markdown) | 设计指导直接随 Catalog 分发 |
+| **deleteSurface 语义** | 无明确规范 | 在 createSurface 前必须先 delete | surfaceId 全局唯一/会话内 |
+| **JSON Schema metadata** | 不支持 | 支持 `$schema`, `$id`, `title`, `description` | inline Catalog 不再验证失败 |
+| **Video posterUrl** | 无 | 可选预览图 | |
+| **TextField placeholder** | 无 | 可选占位提示 | |
+| **Slider steps** | 无 | 可选离散步进值 | |
+| **Icon path 重命名** | `svgPath` | `path` | |
+| **数据删除语义** | 省略 key = 删除 | `null` = 删除（省略不再删除） | updateDataModel 行为变更 |
+
+### §8.5 完整 Breaking Changes 速查表
+
+| 版本跨度 | 变更 | Breaking? | 迁移方式 |
+|---------|------|-----------|---------|
+| v0.8→v0.9 | `beginRendering` → `createSurface` | ✅ | 全局替换消息名 |
+| v0.8→v0.9 | `surfaceUpdate` → `updateComponents` | ✅ | 全局替换消息名 |
+| v0.8→v0.9 | `dataModelUpdate` → `updateDataModel` | ✅ | 全局替换消息名 |
+| v0.8→v0.9 | 组件嵌套语法 → 扁平化 | ✅ | 重写组件定义 |
+| v0.8→v0.9 | `literalString`/`literalNumber` → 原生类型 | ✅ | 去掉包装器 |
+| v0.8→v0.9 | `version` 字段必填 | ✅ | 每条消息添加 `"version"` |
+| v0.8→v0.9 | `userAction` → `action` | ✅ | 替换事件消息名 |
+| v0.8→v0.9 | `usageHint` → `variant` | ✅ | 全局替换属性名 |
+| v0.8→v0.9 | `distribution`/`alignment` → `justify`/`align` | ✅ | 替换 Row/Column 属性 |
+| v0.8→v0.9 | `primary: true` → `variant: "primary"` | ✅ | 替换 Button 属性 |
+| v0.8→v0.9 | `MultipleChoice` → `ChoicePicker` | ✅ | 替换组件类型名 |
+| v0.8→v0.9 | `entryPointChild`/`contentChild` → `trigger`/`content` | ✅ | 替换 Modal 属性 |
+| v0.8→v0.9 | `tabItems` → `tabs` | ✅ | 替换 Tabs 属性 |
+| v0.9→v0.9.1 | MIME type `application/json+a2ui` → `application/a2ui+json` | ⚠️ 轻微 | 更新传输层常量 |
+| v0.9.1→v1.0 | `theme` → `surfaceProperties` | ✅ | 替换属性名，移除 primaryColor |
+| v0.9.1→v1.0 | `functions` array → map | ✅ | 重构 Catalog 定义 |
+| v0.9.1→v1.0 | 新增 `actionResponse`/`callFunction` | ⚠️ 新增 | 渲染器需实现新消息处理 |
+| v0.9.1→v1.0 | `callableFrom`/`returnType` 从 wire 移除 | ✅ | 移至 Catalog 定义 |
+| v0.9.1→v1.0 | UAX#31 命名强制 | ✅ | 检查所有标识符合规性 |
+| v0.9.1→v1.0 | `null` = 删除（省略不再删除） | ✅ | updateDataModel 用 null 显式删除 |
+| v0.9.1→v1.0 | `svgPath` → `path`（Icon） | ✅ | 替换属性名 |
+
+### §8.6 版本选择决策规则
+
+| 场景 | 推荐版本 | 原因 |
+|------|---------|------|
+| **新项目** | v1.0 | 最新稳定版，功能最完整 |
+| **需要双向 RPC** | v1.0（必须） | actionResponse/callFunction 仅 v1.0 支持 |
+| **需要 Single-Message UI** | v1.0（必须） | createSurface 内嵌组件仅 v1.0 支持 |
+| **现有 v0.9 项目** | v0.9 或升级 v1.0 | 评估是否需要 v1.0 新功能 |
+| **需要兼容旧渲染器** | 对应版本 | 渲染器决定最低版本 |
+| **自定义 Catalog + 品牌** | v1.0 | surfaceProperties 品牌解耦更灵活 |
+| **研究/学习** | v1.0 + 阅读 v0.8/v0.9 演进 | 理解设计决策的来龙去脉 |
+
+**核心原则**：Agent 发送的 `version` 字段必须与目标渲染器支持的版本匹配。版本不匹配时，渲染器应报错或降级处理。

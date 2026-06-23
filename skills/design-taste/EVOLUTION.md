@@ -285,3 +285,4 @@ v1 的固化只写入 SKILL.md。v2 的固化写入**正确的文件**：
 | 2026-06-06 | v1 创建：三层架构 + 数据结构 + 归因模型 |
 | 2026-06-22 | v2 升级：适配 v6 模块化架构，新增 Domain 路由归因，策略→文件路由，文件体系维护规则 |
 | 2026-06-23 | v2.1：融入 A2UI 理论，新增 knowledge/declarative-ui.md + domains/agent-ui.md，SKILL.md 增加 Agent UI 安全纪律（§4.F）和 Pre-Flight 扩展（§6.G），component-arsenal 新增 5 个 Agent UI 组件模式 |
+| 2026-06-23 | v2.2（P0 补全）：深度审计 A2UI 融合完整度（~35%），补齐 5 项 P0 致命缺失：knowledge/a2ui-agent-sdk.md（539行，SDK/Prompt工程/验证/流式解析）、knowledge/a2ui-mcp-integration.md（489行，3种MCP集成模式）、knowledge/a2ui-theming.md（341行，CSS Variables/Semantic Hints/迁移指南）、declarative-ui.md 追加 §8 版本演进（+143行）、a2ui-catalog-reference.md 追加 §6 严格规则（+223行）。SKILL.md 升级 v7，路由表补全 4 项 |

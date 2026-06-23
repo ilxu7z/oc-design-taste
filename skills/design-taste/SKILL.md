@@ -1,19 +1,20 @@
 ---
 name: design-taste
 description: >-
-  设计品味校准框架 v6 · 鮱澄特化版 — 模块化架构。
+  设计品味校准框架 v7 · 鮱澄特化版 — 模块化架构 + A2UI 全量知识融合。
   核心引擎：推理旋钮 + 纪律校准 + Domain 路由。
   按需加载领域文件（domains/）、美学预设（profiles/）、组件库（libraries/）、知识层（knowledge/）。
   适配：UI/前端/页面/画册/官网/生图/样式/排版/布局/重新设计/邮件/email/template/EDM/Dashboard/SaaS。
 ---
 
-# Design Taste v6 — 设计品味校准框架 · 鮱澄特化版
+# Design Taste v7 — 设计品味校准框架 · 鮱澄特化版
 
 > **核心理念**：AI 输出的默认值 = 模板感、无品味。
 > 但规则不是死的——每条都有**适用场景**和**突破条件**。
 > 真正的品味 = 知道什么时候遵守规则，什么时候打破规则。
 
-> **v6 架构**：本文件 = **推理引擎**。规则按需从 domain/profile/library/knowledge 文件加载，不塞全量。
+> **v7 架构**：本文件 = **推理引擎**。规则按需从 domain/profile/library/knowledge 文件加载，不塞全量。
+> v7 增量：补全 A2UI SDK/MCP/Catalog/Theme/版本演进 5 项 P0 缺失。
 > 工作流：读信号 → 调旋钮 → 路由 Domain → 写 Design Read → 按需加载 → 执行 → Pre-Flight → 交付。
 
 ---
@@ -221,7 +222,10 @@ VISUAL_DENSITY: 4（标准密度，不拥挤不空旷）
 | 设计系统速查/安装命令 | `knowledge/design-systems.md` |
 | 理解 AI 懒惰行为根因 | `knowledge/ai-laziness.md` |
 | 声明式 UI 理论（A2UI v1.0 协议/邻接表/安全模型/数据流） | `knowledge/declarative-ui.md` |
-| A2UI v1.0 组件/函数/属性速查 | `knowledge/a2ui-catalog-reference.md` |
+| A2UI v1.0 组件/函数/属性速查 + Catalog Schema严格规则 + 自定义Catalog指南 | `knowledge/a2ui-catalog-reference.md` |
+| A2UI Agent SDK 指南（Prompt工程/验证/流式解析/传输集成） | `knowledge/a2ui-agent-sdk.md` |
+| A2UI × MCP 三种集成模式（over MCP / in MCP Apps / in A2UI） | `knowledge/a2ui-mcp-integration.md` |
+| A2UI 主题系统（CSS Variables/Semantic Hints/版本迁移） | `knowledge/a2ui-theming.md` |
 
 ---
 
@@ -557,7 +561,7 @@ VISUAL_DENSITY: 4（标准密度，不拥挤不空旷）
 
 ## 9. 版本与进化
 
-- **当前版本：** v6 · 鮱澄特化版
+- **当前版本：** v7 · 鮱澄特化版
 - **架构：** 核心引擎（本文件）+ domains/ + profiles/ + libraries/ + knowledge/
 - **自进化引擎：** `EVOLUTION.md` — 视觉自进化 v2，每次交付后复盘并更新
 - **备份：** v5 保存在 `SKILL.md.v5`
