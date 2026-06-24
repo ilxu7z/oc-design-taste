@@ -338,3 +338,103 @@ box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1), 0 10px 15px rgba(37, 99, 235, 0.05
 | Color Consistency Lock | 最高 | 是 |
 | 阴影调色 | 中 | 否 |
 | 暗色模式 | 中 | 消费者页面强制 |
+
+---
+
+## 11. Color Strategy 四步模型（从 impeccable colorize.md 移植）
+
+Color Strategy 是色彩决策的战略框架。不是"什么颜色好看"，而是"这个项目应该用多少颜色"。
+
+### 11.1 四档策略
+
+#### Restrained（克制）
+- **色面积**：单一 accent 色 ≤10% 页面面积
+- **中性色**：tinted neutrals（chroma 0.005-0.015），向品牌色 hue 方向
+- **适用**：Product 寄存器默认、Dashboard、B端后台、数据密集界面
+- **规则**：accent 仅用于 primary action、当前选中、状态指示。不做装饰。
+- **语义颜色优先**：success/error/warning/info 各有固定色，accent 色与语义色不混用
+- **品牌色使用**：CTA 按钮上，其他地方克制
+
+#### Committed（投入）
+- **色面积**：一个饱和色承担 30-60% 表面
+- **中性色**：可以选择品牌色调表面，而不是灰色
+- **适用**：Brand 寄存器 Hero 区域、品牌官网、Landing Page
+- **规则**：选一个主色"拥有"页面，其他元素围绕它构图
+- **允许超出 Restrained 的 ≤10% 规则**——那规则只适用于 Restrained
+- **示例**：全品牌色背景 Hero + 中性色内容区
+
+#### Full Palette（完整调色板）
+- **色面积**：3-4 个命名色彩角色，各有明确用途
+- **角色体系**：Primary（主品牌）+ Secondary（辅助）+ Tertiary（点缀）+ Neutral
+- **适用**：多产品线展示、创意型品牌、强调差异化的场景
+- **规则**：每个颜色有固定语义角色，不在"装饰"和"功能"间混用
+- **60-30-10 法则**：Primary 60%、Secondary 30%、Accent 10%（按视觉权重，非像素面积）
+- **角色命名**：给每个颜色起描述性名字（"深松石绿"而非 "green-700"）
+
+#### Drenched（浸染）
+- **色面积**：表面本身就是颜色
+- **适用**：纯创意/艺术/时尚品牌、Campaign 页、音乐/文化产品
+- **规则**：大胆饱和色覆盖大面积，不需要"安全"的白色背景
+- **注意**：文字对比度仍然必须 ≥4.5:1，无障碍不随策略降级
+- **Brand 寄存器专属**——Product 寄存器永远不用 Drenched
+
+### 11.2 策略选择流程
+
+```
+Register 判断（Brand / Product / 混合）
+  ↓
+Product → 默认 Restrained
+Brand → 从以下信号推断：
+  - "大胆/创意/前卫/Dribbble/Awwwards" → Full Palette 或 Drenched
+  - "专业/信任/B端/极简" → Committed
+  - "高端消费者/品牌/premium/Apple风" → Committed（以质量而非面积取胜）
+  - 无明确信号 → Committed（Brand 的安全默认）
+混合 → Hero 用 Brand 策略，内容区用 Restrained
+```
+
+### 11.3 OKLCH 色彩空间实践
+
+**新项目推荐 OKLCH**（感知均匀，等步长看起来等距）。
+
+三个参数：`oklch(lightness chroma hue)`
+- lightness: 0-100%（感知亮度）
+- chroma: 约 0-0.4（感知饱和度）
+- hue: 0-360°（色相角度）
+
+**构建色阶规则**：
+- 保持 chroma + hue 不变，变化 lightness
+- **接近白色或黑色时降低 chroma**——高 chroma + 极端 lightness = 刺眼
+
+**注意**：SKILL.md §0.A.2 Color Strategy 提到但此处补充参数。
+
+### 11.4 Alpha 是设计异味
+
+大量使用 `rgba()` / `hsla()` 通常意味着色板不完整。Alpha 导致不可预测的对比度、性能开销和一致性问题。应该为每个上下文定义明确的叠加颜色。
+
+例外：focus ring 和交互状态，其中透明是有意义的。
+
+### 11.5 有色背景 vs 纯灰
+
+**永远不要默认暖色 tint**。`oklch(97% 0.01 60)` 及其邻居是 2026 AI cream/sand 的标志。
+
+选择逻辑：
+1. **饱和品牌色作为表面**（如果策略是 Committed/Drenched）
+2. **色度为 0 的真正 off-white**（如果策略是 Restrained）
+3. **明确属于品牌的深色中间调中性色**（如果品牌色系偏深）
+
+**tint 方向来自项目品牌色**，不来自"暖=友好，冷=科技"的懒惰公式。
+
+### 11.6 暗色模式色阶
+
+暗色模式不等于反色。深度来自表面亮度，不来自阴影：
+- 构建三步表面刻度：高 elevation 更亮（如 15% / 20% / 25% lightness）
+- 使用项目品牌的**相同 hue 和 chroma**，只变 lightness
+- 正文 weight 降低（如 350 而非 400）——浅字在深底上视觉更重
+
+### 11.7 Token 层次
+
+使用两层 token：
+- **原始 token**（`--blue-500`）：不变的原始值
+- **语义 token**（`--color-primary: var(--blue-500)`）：上下文含义
+
+暗色模式只重定义语义层。原始层不变。
