@@ -1,8 +1,10 @@
 ---
 knowledge: a2ui-theming
+status: preview
 description: >-
-  A2UI 主题系统完整指南 — 从 v0.9 theme 到 v1.0 surfaceProperties 的迁移、
+  [前瞻] A2UI 主题系统完整指南 — 从 v0.9 theme 到 v1.0 surfaceProperties 的迁移、
   CSS Variables 系统、Per-component Override、Semantic Hints、Agent 最佳实践。
+  A2UI 协议尚未在 OpenClaw 中原生支持，此文件为前瞻性知识储备。
   融合自 a2ui-project/a2ui theming.md + reference。
 ---
 

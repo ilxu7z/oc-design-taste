@@ -1,7 +1,9 @@
 ---
 knowledge: a2ui-agent-sdk
+status: preview
 description: >-
-  A2UI Agent SDK 指南 — 能力管理、动态 Prompt 工程、流式解析、Payload 修复与验证、A2A 传输集成。
+  [前瞻] A2UI Agent SDK 指南 — 能力管理、动态 Prompt 工程、流式解析、Payload 修复与验证、A2A 传输集成。
+  A2UI 协议尚未在 OpenClaw 中原生支持，此文件为前瞻性知识储备。
   融合自 agent_sdk_guide.md + a2ui-agent-maintenance + a2ui-sdk-design。
   面向 Agent 开发者的知识文档，帮助理解 SDK 内部架构和最佳实践。
 ---
