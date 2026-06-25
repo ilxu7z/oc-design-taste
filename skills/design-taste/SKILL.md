@@ -1,10 +1,13 @@
 ---
 name: design-taste
+version: "9.0"
+upstream: "https://github.com/ilxu7z/oc-design-taste"
+synced: "2026-06-25T11:00:00+08:00"
 description: >-
   设计品味校准框架 v9 · 鮱澄特化版 — 模块化架构 + A2UI 全量知识融合 + impeccable 融合增强 + GSAP 引擎深度融合。
   核心引擎：推理旋钮 + 纪律校准 + Domain 路由 + Register 判断 + AI Slop 检测。
   按需加载领域文件（domains/）、美学预设（profiles/）、组件库（libraries/）、知识层（knowledge/）。
-  适配：UI/前端/页面/画册/官网/生图/样式/排版/布局/重新设计/邮件/email/template/EDM/Dashboard/SaaS。
+  适配：UI/前端/页面/画册/官网/生图/样式/排版/布局/重新设计/邮件/email/template/EDM/Dashboard/SaaS/动效/animation/品牌/VI/Logo/配色。
 ---
 # Design Taste v9 — 设计品味校准框架 · 鮱澄特化版
 > **核心理念**：AI 输出的默认值 = 模板感、无品味。
@@ -239,6 +242,7 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 ### 组件库/知识层按需加载
 | 需要什么 | 读取什么 |
 |---------|---------|
+| **知识层导航索引（先读我）** | `knowledge/INDEX.md` |
 | 高端组件模式参考 | `libraries/component-arsenal.md` |
 | 动效代码骨架 | `libraries/motion-patterns.md` |
 | GSAP 引擎深度融合（三旋钮映射/决策树/反模式/插件映射） | `knowledge/gsap-animation-engine.md` |
@@ -646,7 +650,40 @@ GSAP 映射：`"power3.out"`（≈quart）/ `"power4.out"`（≈quint）/ `"expo
 5. **3D/WebGL 项目** — 超出 scope，建议 Three.js 专家
 6. **游戏 UI** — 超出 scope
 ---
-## 9. 版本与进化
+## 9. OpenClaw 工具使用指南
+
+本 skill 在 OpenClaw 环境中运行时，使用以下工具映射：
+
+| 任务 | 工具 | 说明 |
+|------|------|------|
+| 加载知识文件 | `read` | 按需读取 domains/libraries/knowledge/profiles 中的 .md 文件 |
+| 生成代码/HTML | `write` | 写入设计产出的代码文件 |
+| 生成图片 | `image` 或 `exec` | 调用生图 API（Kuai/SiliconFlow 等） |
+| 分析参考图 | `image` | 用视觉模型分析参考图片的设计特征 |
+| 检查已有设计 | `read` | 读取项目中的现有 CSS/HTML/组件文件 |
+| 运行构建/测试 | `exec` | 验证设计产出（如 `npx tailwindcss` 构建） |
+| 搜索设计参考 | `web_search` | 搜索设计趋势、配色方案、排版参考 |
+
+### 子 Agent 协作模式
+
+当设计任务涉及多领域（文案+代码+设计），按以下优先级决策：
+
+1. **纯设计任务**（单文件/≤200行）→ 自己执行，不派发
+2. **设计+代码**（多文件/复杂实现）→ 派 `sessions_spawn(agentId="sheji")` 或 `sessions_spawn(agentId="fengzhu")`
+3. **三省六部流程**（用户明确要求或决策门 #6-#9 触发）→ 走 Edict Dashboard pipeline
+
+### Token 预算感知
+
+本 skill 文件按需加载，预估 token 消耗：
+- SKILL.md（推理引擎）：~3,500 tokens
+- 单个 domain 文件：~1,300-5,100 tokens
+- 单个 knowledge 文件：~600-3,000 tokens
+- 单个 library 文件：~2,300-4,100 tokens
+- 单个 profile 文件：~500-4,000 tokens
+
+**加载策略**：先读 `knowledge/INDEX.md`（~600 tokens）确定需要哪些文件，再按需加载。
+---
+## 10. 版本与进化
 - **当前版本：** v9 · 鮱澄特化版 · impeccable 融合增强 + GSAP 引擎深度融合
 - **架构：** 核心引擎（本文件）+ domains/ + profiles/ + libraries/ + knowledge/
 - **自进化引擎：** `EVOLUTION.md` — 视觉自进化 v2，每次交付后复盘并更新
