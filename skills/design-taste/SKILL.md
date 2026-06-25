@@ -1,8 +1,8 @@
 ---
 name: design-taste
-version: "9.1"
+version: "9.4"
 upstream: "https://github.com/ilxu7z/oc-design-taste"
-synced: "2026-06-25T11:00:00+08:00"
+synced: "2026-06-25T14:30:00+08:00"
 description: >-
   设计品味校准框架。当你需要做以下任何设计任务时使用此 skill：
   网页设计（官网/Landing Page/产品页/品牌故事/案例页/Hero/表单/404页/导航/Footer）、
@@ -14,12 +14,12 @@ description: >-
   旧项目重新设计/Redesign、AI Agent生成UI/Chat富卡片/Copilot面板。
   不适用：纯文案撰写（无视觉输出）、SEO/内容策略、后端开发、部署运维、数据分析（无可视化需求）。
 ---
-# Design Taste v9.1 — 设计品味校准框架 · 鮱澄特化版
+# Design Taste v9.4 — 设计品味校准框架 · 鮱澄特化版
 > **核心理念**：AI 输出的默认值 = 模板感、无品味。
 > 但规则不是死的——每条都有**适用场景**和**突破条件**。
 > 真正的品味 = 知道什么时候遵守规则，什么时候打破规则。
 > **v9 架构**：本文件 = **推理引擎**。规则按需从 domain/profile/library/knowledge 文件加载，不塞全量。
-> v9 增量：v8 impeccable 精华 + GSAP 引擎深度融合（三旋钮映射/决策树/反模式/插件映射/ScrollTrigger 8 反模式/性能铁律/Framework 集成）。
+> v9.4 增量：P0 修复（GSAP license 警告/AIDA 降级/Image-First 条件触发）+ P1 改进（十状态条件性/无障碍强制规则/技法决策树精简/快速降级矩阵）。
 > 工作流：读信号 → 判断 Register → 选 Color Strategy → 调旋钮 → 路由 Domain → 写 Design Read → 按需加载 → 执行 → Pre-Flight → 交付。
 ---
 ## 0. Brief Inference（读前确认）
@@ -119,6 +119,21 @@ OEM品牌官网 × 双受众 × 自然专业
 | 组件内硬编码内容 | 数据/结构不分离 | props 传入或数据文件分离 |
 | 工具结果直接 dump JSON | 懒人展示 | 格式化为可视 UI 卡片 |
 | 自创通用组件名（InfoBox 等）| Agent 不走白名单 | 只用标准组件清单 |
+
+### 0.E 快速降级矩阵（何时不用高级规则）
+
+以下条件满足任一，跳过对应高级规则。**降级比过度设计好。** 不确定时，选更简单的方案。
+
+| 条件 | 跳过的规则 | 原因 |
+|------|-----------|------|
+| 任务 ≤ 1 个 section | AIDA 结构、布局多样性强制 | 单 section 不需要结构框架 |
+| MOTION ≤ 3 | GSAP 引擎、动画四层分层 | 静态页面不需要动效框架 |
+| VARIANCE ≤ 3 | 非对称布局规则、Fluid Island Nav | 传统对称布局不需要 |
+| Product 寄存器 | Double-Bezel、Button-in-Button、Brand imagery 规则 | 工具 UI 不需要装饰技法 |
+| 邮件模板 | 所有 Web 布局规则 | 邮件用 table-based HTML |
+| 打印/PDF | 所有动效规则、响应式规则 | 静态输出 |
+| 用户说"简单做"/"快速" | 所有高级技法、Image-First 工作流 | 速度优先于品质 |
+
 ---
 ## 1. 三旋钮推理模型
 Design Read 之后，设定三个旋钮。**所有**布局/色彩/动效/排版决策由这三个值驱动。
@@ -238,7 +253,8 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 | `b2b-print` | `domains/b2b-print.md` | B端画册、品牌手册、规格卡、海报、PDF、名片、信纸、包装设计 |
 | `email` | `domains/email.md` | 邮件（冷/营销/事务/Onboarding） |
 | `image-generation` | `domains/image-generation.md` | 生图（Hero/场景/痛点/品牌套件/icon图标/插画/背景纹理） |
-| `imagegen-frontend` | `domains/imagegen-frontend.md` | 前端设计生图、Mobile UI 生图、图转码 |
+| `image-to-code` | `domains/image-to-code.md` | 图转码（先出图→分析→实现前端），视觉网站任务强制流程 |
+| `imagegen-frontend` | `domains/imagegen-frontend.md` | 前端设计生图、Mobile UI 生图 |
 | `redesign` | `domains/redesign.md` | 旧项目改造/Redesign |
 | `dashboard` | `domains/dashboard.md` | Dashboard、B端SaaS 后台、数据展示、数据可视化、图表、仪表盘 |
 | `agent-ui` | `domains/agent-ui.md` | AI Agent 生成 UI、Chat 富卡片、工具结果可视化、Copilot 面板 |
@@ -260,6 +276,8 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 | 高端组件模式参考 | `libraries/component-arsenal.md` |
 | 动效代码骨架 | `libraries/motion-patterns.md` |
 | GSAP 引擎深度融合（三旋钮映射/决策树/反模式/插件映射） | `knowledge/gsap-animation-engine.md` |
+| 页面结构框架（AIDA强制结构/Gapless Bento/Hero架构/Section间距） | `knowledge/page-architecture.md` |
+| 高端视觉技法（Double-Bezel/Button-in-Button/Fluid Island/Magnetic/Spring） | `knowledge/premium-visual-techniques.md` |
 | 布局模式参考 | `libraries/layout-patterns.md` |
 | 中文字体配对/排版细节 | `knowledge/font-pairings.md` |
 | 色彩禁令/替代方案/品牌色策略 | `knowledge/color-science.md` |
@@ -373,6 +391,26 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 - **禁止 Broken Image** → 每张图片都用 `picsum` seed 或真实 URL
 - **面孔/地名真实性**：不用 fake 人名、fake 地名
 - **Logo Wall**：5 个以上 logo 才做，否则省略
+
+**Brand 寄存器 imagery 完整规则（从 impeccable brand.md 融合）：**
+- **必须 ship imagery。** 纯排版+颜色的品牌页面是未完成的。至少一张决定性照片
+- **物理对象搜索优于抽象概念。** "concrete wall texture" 优于 "background texture"
+- **一张决定性照片胜过五张平庸照片。** 找到那张定义页面的图
+- **alt text 是品牌声音的一部分。** 不是 `alt="hero image"`，而是 `alt="Chef's knife slicing through heritage tomato on reclaimed oak board"`
+- **图片 CSS 滤镜匹配品牌 mood。** `grayscale(0.2)` + `contrast(1.1)` + `brightness(0.95)` 让占位图不看起来像 stock photo
+- **背景氛围注入：** 深层径向模糊、颗粒网格渐变、偏移暗色叠加。避免平面纯色
+
+**Brand 寄存器 permissions（Brand 可以但 Product 不可以）：**
+- 雄心勃勃的首屏动效（Hero reveal、scroll-triggered 入场）
+- 单用途视口（一个 section 占满整个屏幕只为传达一个想法）
+- 意外配色策略（非对称色块、drenched 背景）
+- 每 section 独立艺术指导（不同 section 可以有不同 mood）
+
+**Brand 寄存器 bans 补充：**
+- ❌ Monospace 作为"技术感"简写（品牌非技术时）
+- ❌ 大圆角图标（>16px border-radius 在功能图标上）
+- ❌ 全大写正文段落
+- ❌ 零图片的品牌页面（"minimal" 不是 "empty"）
 ### 4.E 文案自审
 - **❌ 禁止 AI 陈词：** Elevate、Seamless、Unleash、Next-Gen、Game-changer、Delve、Tapestry
 - **❌ 禁止假数字：** 99.99%、50%、$100.00 → 用有机数据：47.2%、$99.00、+1 (312) 847-1928
@@ -394,17 +432,39 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 | **✅ 数据与结构分离** | 硬编码内容必须提取为 props/data |
 | **✅ 组件白名单思维** | 只用标准组件，不发明新组件 |
 | **✅ 邻接表思维** | 复杂 UI 先列清单再逐个生成 |
-### 4.G 交互状态纪律（升级为八状态）
-| 状态 | 要求 |
-|------|------|
-| **Default** | 基础样式 |
-| **Hover** | 背景色/缩放/位移微变，禁止无 hover 反馈的按钮 |
-| **Focus** | 可见的 focus ring，用 `:focus-visible`，禁止 `outline: none` 无替代 |
-| **Active** | `scale(0.98)` 或 `translateY(1px)`，模拟物理按压感 |
-| **Disabled** | 降低透明度，无指针事件 |
-| **Loading** | 骨架屏匹配布局尺寸，禁止通用圆形 spinner |
-| **Error** | 清晰的内联错误信息，禁止 `window.alert()` |
-| **Success** | 绿色勾选/确认，禁止感叹号狂欢 |
+### 4.G 交互状态纪律（升级为十状态）
+
+**Product 寄存器必须覆盖全部十状态。** Brand 寄存器至少覆盖 Default/Hover/Focus/Active/Loading/Error。
+
+| 状态 | 要求 | Register |
+|------|------|----------|
+| **Default** | 基础样式 | 全部 |
+| **Hover** | 背景色/缩放/位移微变，禁止无 hover 反馈的按钮 | 全部 |
+| **Focus** | 可见的 focus ring，用 `:focus-visible`，禁止 `outline: none` 无替代 | 全部 |
+| **Active** | `scale(0.98)` 或 `translateY(1px)`，模拟物理按压感 | 全部 |
+| **Disabled** | 降低透明度，无指针事件 | 全部 |
+| **Loading** | 骨架屏匹配布局尺寸，禁止通用圆形 spinner | 全部 |
+| **Error** | 清晰的内联错误信息，禁止 `window.alert()` | 全部 |
+| **Success** | 绿色勾选/确认，禁止感叹号狂欢 | 全部 |
+| **Selected** | 当前选中项高亮（导航 active link、tab 选中、列表选中行） | Product 必须 / Brand 可选 |
+| **Warning** | 黄色/琥珀色警告（即将超限、需要注意、非阻塞问题） | Product 必须 / Brand 不需要 |
+| **Info** | 蓝色/中性信息提示（帮助文字、tooltip、功能说明） | Product 建议 / Brand 可选 |
+
+> **条件规则：** Selected/Warning/Info 仅在以下场景强制：
+> - Product 寄存器（Dashboard、SaaS 后台、表单密集型页面）
+> - Brand 寄存器中的表单/搜索/筛选区域
+> - 营销 landing page 不需要 Warning/Info 状态
+
+**Product 状态词汇标准化（从 impeccable product.md 融合）：**
+- 全项目统一状态色：Error=Red、Warning=Amber、Success=Green、Info=Blue
+- 同一按钮形状在所有页面一致
+- 同一表单词汇（label 在上、helper text 可选、error text 在下）在所有表单一致
+- 同一图标风格（strokeWidth 统一）在全项目一致
+- 禁止装饰性动效（Product 寄存器动效只传达状态，不装饰）
+- 禁止 UI 中使用展示字体
+- 禁止重造标准 affordance（自定义滚动条、怪异表单控件、非标准 modal）
+- 禁止非活跃状态使用重色或全饱和度 accent
+- Modal 是最后手段——先用 inline/progressive 替代方案
 **Focus Ring 正确做法：** `button:focus { outline: none; }` + `button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }`
 **Popover API 优先于自定义 dropdown：** `<button popovertarget="menu">打开</button><div id="menu" popover>` — 原生 light-dismiss、正确 stacking、无障碍
 **CSS Anchor Positioning（Chrome 125+）：** 用 `position-anchor` + `@position-try` 实现无 JS 定位翻转
@@ -416,7 +476,45 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 - 死链接：禁止 `href="#"`，要么链接到真实地址，要么视觉禁用
 - 骨架屏 > 通用 spinner（预览内容形状，感觉更快）
 - 乐观更新：低风险操作（点赞、关注）立即显示成功，失败回滚
+
+### 4.G.1 无障碍强制规则
+
+以下规则**无条件强制**，不依赖 Register 或三旋钮：
+
+| # | 规则 | 检查方法 |
+|---|------|---------|
+| A11 | 所有交互元素有可见 focus ring（`:focus-visible`，禁止 `outline: none` 无替代） | Tab 键遍历 |
+| A12 | 正文对比度 ≥ 4.5:1，大文本（≥18px bold 或 ≥24px）≥ 3:1 | Chrome DevTools 或 axe |
+| A13 | 所有 `<img>` 有 `alt` 属性（装饰图用 `alt=""`，信息图写描述） | 代码审查 |
+| A14 | 表单 `<input>` 有关联 `<label>`（非 placeholder-only） | 代码审查 |
+| A15 | 页面有且仅有一个 `<h1>`，标题层级不跳级（h1→h2→h3） | 代码审查 |
+| A16 | `prefers-reduced-motion: reduce` 降级已实现 | 系统设置测试 |
+| A17 | 颜色不是传达信息的唯一方式（色盲友好：错误状态同时用图标+颜色+文字） | 灰度截图测试 |
+| A18 | 可点击区域 ≥ 44×44px（移动端触摸目标），间距 ≥ 8px | 测量 |
 ### 4.H Motion 深度规范（从 impeccable animate.md 移植 + GSAP 融合）
+
+#### 动画机会评估（从 impeccable animate.md 融合）
+
+在开始动画前，先评估以下 5 个维度。每个维度回答"是"或"否"：
+
+| 维度 | 问题 | 是 → 需要动画 |
+|------|------|-------------|
+| **缺失反馈** | 用户操作后界面没有立即响应？ | ✅ 加微交互反馈 |
+| **突兀过渡** | 元素出现/消失/变化时感觉跳跃？ | ✅ 加过渡动画 |
+| **不清晰关系** | 用户难以理解元素间的层级/因果关系？ | ✅ 加空间动画 |
+| **缺乏愉悦** | 界面功能正确但感觉冰冷？ | ✅ 加愉悦时刻 |
+| **错失引导** | 用户不知道该看哪里/下一步做什么？ | ✅ 加引导动画 |
+
+**策略分层（从 impeccable animate.md 融合）：**
+
+| 层级 | 名称 | 内容 | 优先级 |
+|------|------|------|--------|
+| L1 | **Hero Moment** | 页面加载时的核心叙事动画（1-2 个关键元素） | 高 |
+| L2 | **Feedback Layer** | 按钮/表单/切换的即时反馈 | 高（必须） |
+| L3 | **Transition Layer** | 页面/视图/状态间的过渡 | 中 |
+| L4 | **Delight Layer** | 空状态动画/完成庆祝/情境动画 | 低（锦上添花） |
+
+**实现顺序：L2 → L1 → L3 → L4。** 反馈层（L2）永远最先实现——没有反馈的界面是破损的。
 #### MOTION_INTENSITY → 引擎选择
 | MOTION 档位 | 引擎 | 说明 |
 |-------------|------|------|
@@ -626,12 +724,22 @@ GSAP 映射：`"power3.out"`（≈quart）/ `"power4.out"`（≈quint）/ `"expo
 - [ ] z-index 有系统化层级
 - [ ] 无障碍：focus ring、alt text、语义 HTML
 - [ ] `prefers-reduced-motion` 降级
-### 6.L 上下文文件检查（有 DESIGN.md/PRODUCT.md 时）
+### 6.K 无障碍检查（强制）
+- [ ] 所有交互元素有可见 focus ring（`:focus-visible`，无 `outline: none` 无替代）
+- [ ] 正文对比度 ≥ 4.5:1，大文本 ≥ 3:1
+- [ ] 所有 `<img>` 有 `alt` 属性
+- [ ] 表单 input 有关联 `<label>`
+- [ ] 页面有且仅有一个 `<h1>`，标题层级不跳级
+- [ ] `prefers-reduced-motion` 降级已实现
+- [ ] 颜色不是传达信息的唯一方式
+- [ ] 可点击区域 ≥ 44×44px
+
+### 6.M 上下文文件检查（有 DESIGN.md/PRODUCT.md 时）
 - [ ] PRODUCT.md 已读取（品牌战略/反参考/受众）
 - [ ] DESIGN.md 已读取（Token/组件规范/命名规则）
 - [ ] DESIGN.md frontmatter token 与 prose 一致
 - [ ] 不凭空编造 token 值
-### 6.M 生产检查
+### 6.N 生产检查
 - [ ] 无死链接（`href="#"`）
 - [ ] 无 `// TODO` / `// ...` 省略注释
 - [ ] 无未使用的 import
@@ -702,6 +810,33 @@ GSAP 映射：`"power3.out"`（≈quart）/ `"power4.out"`（≈quint）/ `"expo
 - **架构：** 核心引擎（本文件）+ domains/ + profiles/ + libraries/ + knowledge/
 - **自进化引擎：** `EVOLUTION.md` — 视觉自进化 v2，每次交付后复盘并更新
 - **备份：** v7 保存在 `SKILL.md.v5`（v7 原文已融合为 v8，v5 是最后一个完整备份）
+### v9.4 增量日志（2026-06-25）
+- **P0 修复**：GSAP 付费插件加 `⚠️ Club license` 警告（SplitText/MorphSVG/DrawSVG/ScrollSmoother/InertiaPlugin/ScrambleText）+ 免费替代方案
+- **P0 修复**：AIDA 从"强制结构"降级为"默认策略"，新增三旋钮降级表（5 条降级规则）
+- **P0 修复**：Image-First 从"每 section 一张图"改为条件触发（4 条件 + 成本估算表）
+- **P1 改进**：十状态 Selected/Warning/Info 标记 `@conditional`（Product 必须/Brand 可选/营销页不需要）
+- **P1 改进**：新增 §4.G.1 无障碍强制规则（A11-A18，8 条）+ Pre-Flight §6.K
+- **P1 改进**：技法决策树从 30+ 分支精简至 5 节点
+- **P1 改进**：新增 §0.E 快速降级矩阵（7 条"何时不用"规则）
+- 版本号 v9.3 → v9.4
+
+### v9.3 增量日志（2026-06-25）
+- **P1 动画评估框架**：§4.H 新增动画机会评估（5维度）+ 策略分层（Hero Moment/Feedback/Transition/Delight 四层）+ 实现顺序（L2→L1→L3→L4）
+- **P1 GSAP 高级选项补全**：`knowledge/gsap-animation-engine.md` 新增 SplitText 高级选项（12参数）/ MorphSVG 高级选项（8参数）/ DrawSVG segment格式 / Flip 高级选项（8参数）/ ScrollTrigger 高级选项（scrollerProxy/snap/toggleClass/once/refreshPriority）
+- **P1 GSAP 核心补全**：新增 svgOrigin / immediateRender陷阱 / function-based values / relative values
+- **P1 设计系统增强**：`knowledge/design-systems.md` 新增铁律0（"官方系统"vs"美学方向"区分）+ Apple Liquid Glass 明确标注
+- 版本号 v9.2 → v9.3
+
+### v9.2 增量日志（2026-06-25）
+- **P0 技法融合**：新增 `knowledge/premium-visual-techniques.md`（Double-Bezel嵌套架构/Button-in-Button CTA/Fluid Island浮动导航/Magnetic Button磁力按钮/Spring Physics弹簧物理/技法选择决策树）
+- **P0 页面结构**：新增 `knowledge/page-architecture.md`（AIDA强制结构/Gapless Bento数学验证/Section间距规则/Hero架构6选项/Meta-Label禁令/布局多样性强制/水平溢出防护）
+- **P0 图转码**：新增 `domains/image-to-code.md`（Image-First强制工作流：生图→分析→实现/图片数量规则/分析维度/实现陷阱/质量自检）
+- **P0 交互升级**：§4.G 八状态→十状态（+Selected/+Warning/+Info），新增 Product 状态词汇标准化规则
+- **P0 Brand imagery**：§4.D 增强（必须 ship imagery/物理对象搜索/alt text 是品牌声音/Brand permissions/Brand bans 补充）
+- §2 Domain 路由表新增 image-to-code
+- §2 知识层新增 page-architecture、premium-visual-techniques
+- 版本号 v9.1 → v9.2
+
 ### v9.1 增量日志（2026-06-25）
 - description 重写：场景分组触发词 + 补充缺失关键词（移动端App/icon/微交互/hover/响应式/数据可视化/表单/404页/海报/名片/包装/插画/背景纹理）+ 否定信号（纯文案/SEO/后端/部署/数据分析）
 - §0 新增 §0.0 快速否定检查（7 条 out-of-scope 规则，防止误触发）

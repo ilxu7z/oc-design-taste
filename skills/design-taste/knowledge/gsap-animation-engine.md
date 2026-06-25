@@ -110,6 +110,24 @@ oc-design-taste §4.H 推荐 `ease-out-quart` / `ease-out-quint` / `ease-out-exp
 
 ## 5. 插件 → 设计效果映射
 
+> ⚠️ **GSAP Club License 警告：** 以下插件需要付费会员：
+> | 插件 | 最低会员等级 | 免费替代 |
+> |------|:----------:|---------|
+> | **SplitText** | 🟢 Shockingly Green | CSS `text-wrap: balance` + 手动 `<span>` 分割 |
+> | **MorphSVG** | 🟢 Shockingly Green | CSS `clip-path` transition |
+> | **DrawSVG** | 🟢 Shockingly Green | CSS `stroke-dasharray` + `stroke-dashoffset` 动画 |
+> | **ScrollSmoother** | 🟢 Shockingly Green | Lenis（免费开源） |
+> | **InertiaPlugin** | 🟢 Shockingly Green | Motion `useSpring` / 手动 momentum 计算 |
+> | **ScrambleText** | 🟢 Shockingly Green | 自定义字符替换动画 |
+> | **Flip** | ✅ 免费 | 包含在核心包中 |
+> | **CustomEase** | ✅ 免费 | 包含在核心包中 |
+> | **Observer** | ✅ 免费 | 包含在核心包中 |
+> | **ScrollToPlugin** | ✅ 免费 | 包含在核心包中 |
+> | **MotionPath** | ✅ 免费 | 包含在核心包中 |
+> | **Draggable** | ✅ 免费 | 包含在核心包中 |
+>
+> **Agent 生成代码前必须确认项目是否有 Club license。无 license 时使用免费替代方案。**
+
 | 设计效果 | GSAP 插件 | MOTION 档位要求 | 代码骨架 |
 |---------|----------|----------------|---------|
 | 布局过渡（网格重排/折叠展开）| **Flip** | 5-8 | `Flip.getState()` → DOM 变更 → `Flip.from(state, {...})` |
@@ -128,6 +146,226 @@ oc-design-taste §4.H 推荐 `ease-out-quart` / `ease-out-quint` / `ease-out-exp
 | 自定义缓动曲线 | **CustomEase** | 任意 | `CustomEase.create("name", ".17,.67,.83,.67")` |
 
 **安装注意：** 所有 GSAP 插件都包含在 `gsap` npm 包中（Webflow 收购后免费开放），import 路径为 `gsap/SplitText`、`gsap/MorphSVGPlugin` 等。
+
+### 5.1 SplitText 高级选项
+
+基础用法：`new SplitText(el, { type: "words,chars" })`
+
+**高级选项（从 gsap-plugins 融合）：**
+
+| 选项 | 类型 | 说明 |
+|------|------|------|
+| `type` | string | `"chars,words,lines"` 组合 |
+| `autoSplit` | boolean | 自动分割（默认 true），false 时手动调 `split()` |
+| `onSplit` | function | 分割完成回调，可在此修改生成的 DOM |
+| `mask` | boolean | 为每个元素创建 mask（clip-path），用于 reveal 动画 |
+| `deepSlice` | boolean | 深度分割嵌套元素内的文本 |
+| `smartWrap` | boolean | 智能换行，保持单词完整 |
+| `wordDelimiter` | string/regex | 单词分隔符（默认空格），中文用 `""` |
+| `prepareText` | function | 分割前预处理文本 |
+| `propIndex` | boolean | 为每个元素添加 `data-prop-index` 属性 |
+| `linesClass` | string | 行元素的 class（默认 `"line"`） |
+| `wordsClass` | string | 词元素的 class（默认 `"word"`） |
+| `charsClass` | string | 字符元素的 class（默认 `"char"`） |
+
+**SplitText 最佳实践：**
+
+```javascript
+import SplitText from "gsap/SplitText";
+gsap.registerPlugin(SplitText);
+
+// 基础分割 + 动画
+const split = new SplitText(".heading", { type: "words,chars" });
+gsap.from(split.chars, {
+  opacity: 0,
+  y: 50,
+  rotationX: -90,
+  stagger: 0.02,
+  duration: 0.6,
+  ease: "power3.out",
+});
+
+// 中文分割（无空格分隔符）
+const split = new SplitText(".cn-heading", {
+  type: "chars",
+  wordDelimiter: "",  // 中文不需要单词分隔
+});
+
+// mask reveal 效果
+const split = new SplitText(".reveal-text", {
+  type: "lines",
+  mask: true,  // 自动创建 clip-path mask
+});
+gsap.from(split.lines, {
+  yPercent: 100,
+  stagger: 0.1,
+  duration: 0.8,
+  ease: "power4.out",
+});
+
+// 清理（组件卸载时）
+split.revert();  // 恢复原始 HTML
+```
+
+### 5.2 MorphSVG 高级选项
+
+基础用法：`gsap.to("#shape1", { morphSVG: "#shape2" })`
+
+**高级选项（从 gsap-plugins 融合）：**
+
+| 选项 | 类型 | 说明 |
+|------|------|------|
+| `type` | string | `"rotational"`（绕中心变形）或 `"linear"`（默认线性插值） |
+| `map` | string | `"size"` / `"position"` / `"complexity"` — 控制映射策略 |
+| `shapeIndex` | number/string | 手动指定起始点索引或 `"auto"` |
+| `smooth` | boolean | 平滑路径（默认 true） |
+| `curveMode` | string | `"auto"` / `"linear"` / `"cubic"` — 路径段曲线类型 |
+| `precompile` | boolean | 预编译为数值数组（性能优化，默认 true） |
+| `render` | function | 自定义渲染函数 |
+| `origin` | boolean | 是否使用 transformOrigin（默认 true） |
+
+**MorphSVG 最佳实践：**
+
+```javascript
+import MorphSVGPlugin from "gsap/MorphSVGPlugin";
+gsap.registerPlugin(MorphSVGPlugin);
+
+// 形状变形 + 旋转类型
+MorphSVGPlugin.convertToPath("circle, rect");  // 先转换基本形状
+
+gsap.to("#circle", {
+  morphSVG: {
+    shape: "#rect",
+    type: "rotational",  // 绕中心旋转变形
+    shapeIndex: "auto",  // 自动找最佳起始点
+  },
+  duration: 1.5,
+  ease: "power2.inOut",
+  repeat: -1,
+  yoyo: true,
+});
+
+// findMorphIndex 调试工具
+const indices = MorphSVGPlugin.findMorphIndex("#shape1", "#shape2");
+console.log(indices);  // 查看最佳起始点
+```
+
+### 5.3 DrawSVG 高级选项
+
+基础用法：`gsap.from("path", { drawSVG: 0 })`
+
+**segment 格式：**
+
+```javascript
+// 完整路径
+{ drawSVG: "0% 100%" }
+
+// 中间 50%
+{ drawSVG: "25% 75%" }
+
+// 从 30% 到终点
+{ drawSVG: "30% 100%" }
+
+// 绝对长度
+{ drawSVG: "50 200" }
+
+// 从起点到 80%
+{ drawSVG: "0 80%" }
+```
+
+**辅助方法：**
+```javascript
+// 获取路径长度
+DrawSVGPlugin.getLength("#path");
+
+// 获取路径上某位置的点
+DrawSVGPlugin.getPosition("#path", 0.5);  // 50% 位置
+```
+
+### 5.4 Flip 高级选项
+
+基础用法：`Flip.from(state, { targets: ".card" })`
+
+| 选项 | 类型 | 说明 |
+|------|------|------|
+| `absolute` | boolean | 使用绝对定位（默认 true，布局变化时推荐） |
+| `nested` | boolean | 同时动画子元素（默认 false） |
+| `scale` | boolean | 使用 scale 而非 width/height（默认 true，性能更好） |
+| `simple` | boolean | 简化模式，只记录 transform（默认 false） |
+| `fade` | boolean | 自动淡入淡出（默认 true） |
+| `targets` | selector/array | 目标元素 |
+| `duration` | number | 动画时长 |
+| `onEnter` | function | 新元素入场回调 |
+| `onLeave` | function | 旧元素退场回调 |
+
+**Flip 最佳实践：**
+
+```javascript
+import { Flip } from "gsap/Flip";
+
+// 1. 记录当前状态
+const state = Flip.getState(".cards", { props: "borderRadius,backgroundColor" });
+
+// 2. 改变布局（添加/删除/重排元素）
+container.classList.toggle("grid-layout");
+
+// 3. 动画到新状态
+Flip.from(state, {
+  targets: ".cards",
+  duration: 0.6,
+  ease: "power2.inOut",
+  absolute: true,  // 布局变化时推荐
+  scale: true,      // 用 scale 而非 width/height
+  onEnter: (el) => gsap.from(el, { opacity: 0, scale: 0 }),
+  onLeave: (el) => gsap.to(el, { opacity: 0, scale: 0 }),
+});
+```
+
+### 5.5 ScrollTrigger 高级选项补充
+
+| 选项 | 类型 | 说明 |
+|------|------|------|
+| `scrollerProxy()` | method | 集成第三方平滑滚动库（Lenis、Locomotive Scroll） |
+| `snap` | number/object | 吸附到特定进度值（分页/步骤导航） |
+| `toggleClass` | object/string | 激活时自动添加/移除 class |
+| `once` | boolean | 触发一次后自动 kill |
+| `refreshPriority` | number | 非顺序创建的 ScrollTrigger 需要此参数避免布局错乱 |
+| `standalone create()` | method | 无关联 tween 的纯回调 ScrollTrigger |
+
+**scrollerProxy 集成 Lenis：**
+```javascript
+import Lenis from "lenis";
+const lenis = new Lenis();
+function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+requestAnimationFrame(raf);
+
+// 告诉 ScrollTrigger 使用 Lenis 的滚动容器
+ScrollTrigger.scrollerProxy(document.body, {
+  scrollTop(value) {
+    if (arguments.length) { lenis.scrollTo(value); }
+    return lenis.scroll;
+  },
+  getBoundingClientRect() { return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight }; },
+});
+
+// 每次 Lenis 滚动后刷新
+lenis.on("scroll", ScrollTrigger.update);
+```
+
+**snap 分页：**
+```javascript
+gsap.to(".panels", {
+  xPercent: -100 * (panels.length - 1),
+  ease: "none",
+  scrollTrigger: {
+    trigger: ".container",
+    pin: true,
+    scrub: 1,
+    snap: 1 / (panels.length - 1),  // 吸附到每个面板
+    end: () => "+=" + container.offsetWidth,
+  },
+});
+```
 
 ---
 
@@ -494,8 +732,41 @@ ScrollTrigger.create({
 | `rotationX`, `rotationY` | `rotateX/Y()` | 3D 旋转 |
 | `skewX`, `skewY` | `skewX/Y()` | deg |
 | `transformOrigin` | `transform-origin` | `"left top"`, `"50% 50%"` |
+| `svgOrigin` | SVG 全局坐标系原点 | 多元素绕同一点旋转 |
 | `autoAlpha` | `opacity` + `visibility` | **推荐替代 opacity** |
 | `clearProps` | 删除 inline style | `"all"` 或逗号分隔属性名 |
 
 **方向旋转后缀：** `"_short"`（最短路径）、`"_cw"`（顺时针）、`"_ccw"`（逆时针）
 例：`rotation: "-170_short"` → 20° 顺时针而非 340° 逆时针
+
+**immediateRender 陷阱：**
+多个 `from`/`fromTo` 动画叠加时，第二个及之后的 tween 必须设 `immediateRender: false`：
+```javascript
+// ❌ 错误：第二个 from 的 immediateRender 覆盖第一个
+gsap.from(".box", { x: -100, duration: 1 });
+gsap.from(".box", { y: -100, duration: 1 });  // 覆盖了 x 的起始值
+
+// ✅ 正确
+gsap.from(".box", { x: -100, duration: 1 });
+gsap.from(".box", { y: -100, duration: 1, immediateRender: false });
+
+// ✅ 更好：用 fromTo 或 Timeline
+gsap.fromTo(".box", { x: -100, y: -100 }, { x: 0, y: 0, duration: 1 });
+```
+
+**function-based values：**
+```javascript
+gsap.to(".cards", {
+  x: (i, target, targets) => i * 50,  // 按索引计算
+  backgroundColor: (i) => ["#ff0000", "#00ff00", "#0000ff"][i % 3],
+  duration: 0.5,
+  stagger: 0.1,
+});
+```
+
+**relative values：**
+```javascript
+gsap.to(el, { x: "+=50" });   // 相对当前位置 +50px
+gsap.to(el, { x: "-=20" });   // 相对当前位置 -20px
+gsap.to(el, { rotation: "+=90_short" });  // 相对旋转 + 最短路径
+```
