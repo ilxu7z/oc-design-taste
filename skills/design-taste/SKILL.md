@@ -1,15 +1,20 @@
 ---
 name: design-taste
-version: "9.0"
+version: "9.1"
 upstream: "https://github.com/ilxu7z/oc-design-taste"
 synced: "2026-06-25T11:00:00+08:00"
 description: >-
-  设计品味校准框架 v9 · 鮱澄特化版 — 模块化架构 + A2UI 全量知识融合 + impeccable 融合增强 + GSAP 引擎深度融合。
-  核心引擎：推理旋钮 + 纪律校准 + Domain 路由 + Register 判断 + AI Slop 检测。
-  按需加载领域文件（domains/）、美学预设（profiles/）、组件库（libraries/）、知识层（knowledge/）。
-  适配：UI/前端/页面/画册/官网/生图/样式/排版/布局/重新设计/邮件/email/template/EDM/Dashboard/SaaS/动效/animation/品牌/VI/Logo/配色。
+  设计品味校准框架。当你需要做以下任何设计任务时使用此 skill：
+  网页设计（官网/Landing Page/产品页/品牌故事/案例页/Hero/表单/404页/导航/Footer）、
+  移动端App界面设计、响应式适配、B端画册/品牌手册/海报/PDF印刷品/名片/包装、
+  邮件模板（营销/事务/Onboarding/通知/密码重置）、Dashboard/B端SaaS后台/数据可视化/图表、
+  生图（产品图/场景图/痛点图/品牌套件/icon图标/插画/背景纹理）、
+  品牌VI/Logo设计、配色方案/色彩系统、排版布局/字体配对、
+  CSS动效/动画/微交互/hover效果/按钮交互/卡片动效/页面过渡/滚动动画、
+  旧项目重新设计/Redesign、AI Agent生成UI/Chat富卡片/Copilot面板。
+  不适用：纯文案撰写（无视觉输出）、SEO/内容策略、后端开发、部署运维、数据分析（无可视化需求）。
 ---
-# Design Taste v9 — 设计品味校准框架 · 鮱澄特化版
+# Design Taste v9.1 — 设计品味校准框架 · 鮱澄特化版
 > **核心理念**：AI 输出的默认值 = 模板感、无品味。
 > 但规则不是死的——每条都有**适用场景**和**突破条件**。
 > 真正的品味 = 知道什么时候遵守规则，什么时候打破规则。
@@ -19,8 +24,17 @@ description: >-
 ---
 ## 0. Brief Inference（读前确认）
 **⛔ 禁止拿到任务直接开干。** 先输出 Design Read。
+### 0.0 快速否定（先判断是否应该退出）
+如果用户请求满足以下任一条件，**不加载本 skill 的 domain/profile 文件，直接声明 out-of-scope**：
+1. 纯文案撰写（无视觉输出需求）→ 建议用文案 Agent
+2. SEO/内容策略（无设计产出）→ 非设计领域
+3. 后端开发/数据库/DevOps → 非设计领域
+4. 部署/运维/CI-CD → 非设计领域
+5. 数据分析（无可视化需求）→ 非设计领域
+6. 3D/WebGL 项目 → 超出 scope
+7. 游戏 UI → 超出 scope
 ### 0.A 读取信号
-1. **载体类型** — 产品画册 / 官网首页 / 产品页 / 场景页 / 生图 / Logo / 海报 / 邮件模板 / Landing Page / 品牌手册 / B端SaaS后台 / Dashboard / 移动端 App
+1. **载体类型** — 产品画册 / 官网首页 / 产品页 / 场景页 / 生图 / Logo / 海报 / 邮件模板 / Landing Page / 品牌手册 / B端SaaS后台 / Dashboard / 移动端 App / icon图标 / 数据可视化图表 / 表单页 / 404页 / 名片 / 包装设计
 2. **任务模式** — 新建（Greenfield）/ 优化保留（Redesign-Preserve）/ 推翻重来（Redesign-Overhaul）
 3. **受众** — 海外B端买家 / 国内经销商 / 终端消费者 / 双受众 / 招聘方 / B端销售/市场团队 / 开发者
 4. **品牌调性关键词** — 用户用过的词："洁白干净""专业""实拍感""自然""工业""高端""premium""极简""Linear风""Apple风"
@@ -220,13 +234,13 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 加载命令：`读取 {path}`
 | Domain 字段 | 文件路径 | 触发信号 |
 |-------------|---------|---------|
-| `web-design` | `domains/web-design.md` | 官网、Landing Page、产品页、品牌故事、案例页 |
-| `b2b-print` | `domains/b2b-print.md` | B端画册、品牌手册、规格卡、海报、PDF |
+| `web-design` | `domains/web-design.md` | 官网、Landing Page、产品页、品牌故事、案例页、移动端App界面、表单页、搜索页、404页、导航、Footer、响应式适配 |
+| `b2b-print` | `domains/b2b-print.md` | B端画册、品牌手册、规格卡、海报、PDF、名片、信纸、包装设计 |
 | `email` | `domains/email.md` | 邮件（冷/营销/事务/Onboarding） |
-| `image-generation` | `domains/image-generation.md` | 生图（Hero/场景/痛点/品牌套件） |
+| `image-generation` | `domains/image-generation.md` | 生图（Hero/场景/痛点/品牌套件/icon图标/插画/背景纹理） |
 | `imagegen-frontend` | `domains/imagegen-frontend.md` | 前端设计生图、Mobile UI 生图、图转码 |
 | `redesign` | `domains/redesign.md` | 旧项目改造/Redesign |
-| `dashboard` | `domains/dashboard.md` | Dashboard、B端SaaS 后台、数据展示 |
+| `dashboard` | `domains/dashboard.md` | Dashboard、B端SaaS 后台、数据展示、数据可视化、图表、仪表盘 |
 | `agent-ui` | `domains/agent-ui.md` | AI Agent 生成 UI、Chat 富卡片、工具结果可视化、Copilot 面板 |
 ### 美学预设加载
 当需要特定美学方向时，加载对应 profile：
@@ -688,6 +702,12 @@ GSAP 映射：`"power3.out"`（≈quart）/ `"power4.out"`（≈quint）/ `"expo
 - **架构：** 核心引擎（本文件）+ domains/ + profiles/ + libraries/ + knowledge/
 - **自进化引擎：** `EVOLUTION.md` — 视觉自进化 v2，每次交付后复盘并更新
 - **备份：** v7 保存在 `SKILL.md.v5`（v7 原文已融合为 v8，v5 是最后一个完整备份）
+### v9.1 增量日志（2026-06-25）
+- description 重写：场景分组触发词 + 补充缺失关键词（移动端App/icon/微交互/hover/响应式/数据可视化/表单/404页/海报/名片/包装/插画/背景纹理）+ 否定信号（纯文案/SEO/后端/部署/数据分析）
+- §0 新增 §0.0 快速否定检查（7 条 out-of-scope 规则，防止误触发）
+- §0.A 载体类型扩展：+icon图标/数据可视化图表/表单页/404页/名片/包装设计
+- §2 Domain 路由表触发信号补充：web-design（+移动端App/表单/搜索/404/导航/Footer/响应式）、b2b-print（+名片/信纸/包装）、image-generation（+icon/插画/背景纹理）、dashboard（+数据可视化/图表/仪表盘）
+
 ### v9.0 版本日志（2026-06-25）
 - 版本号统一 v9：合并 v8.1 + v8.2 全部增量
 - 新增 `knowledge/gsap-animation-engine.md`：10 章节 GSAP 深度融合（Motion 决策树、三旋钮精确映射、Easing 品味映射、ScrollTrigger 8 反模式、插件效果映射、性能铁律、Framework 集成、matchMedia + reduced-motion、autoAlpha 规则、水平滚动陷阱）
