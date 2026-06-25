@@ -556,6 +556,269 @@ export function StaggerGrid({ items }: { items: React.ReactNode[] }) {
 
 ---
 
+## GSAP 高级模式（MOTION ≥6）
+
+### 10. SplitText — 逐字/逐词揭示
+
+将标题或段落拆分为字符/单词/行，逐单元动画。
+
+**适用场景：** Hero 标题揭示、品牌宣言、产品特性逐词出现
+**三旋钮要求：** MOTION 6-9 / VARIANCE 5-8 / DENSITY 2-4
+
+```tsx
+"use client";
+import { useRef, useEffect } from "react";
+import { gsap } from "gsap";
+import { SplitText } from "gsap/SplitText";
+import { useReducedMotion } from "motion/react";
+
+gsap.registerPlugin(SplitText);
+
+export function SplitReveal({ text }: { text: string }) {
+  const ref = useRef<HTMLHeadingElement>(null);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    if (reduce || !ref.current) return;
+    const ctx = gsap.context(() => {
+      const split = SplitText.create(ref.current!, {
+        type: "chars",
+        charsClass: "split-char",
+      });
+      gsap.from(split.chars, {
+        opacity: 0,
+        y: 40,
+        rotationX: -90,
+        stagger: 0.03,
+        duration: 0.6,
+        ease: "power4.out",
+      });
+    }, ref);
+    return () => ctx.revert();
+  }, [reduce, text]);
+
+  return (
+    <h1 ref={ref} className="text-5xl font-bold">
+      {text}
+    </h1>
+  );
+}
+```
+
+**关键点：**
+- `type: "chars"` 逐字拆分；`"words"` 逐词；`"lines"` 逐行
+- `autoSplit: true` + `onSplit()` 用于字体加载后重新拆分
+- CSS 必须：`.split-char { font-kerning: none; text-rendering: optimizeSpeed; }`（防止字距偏移）
+- 禁止 `text-wrap: balance`（会干扰拆分）
+- `aria: "auto"` 为屏幕阅读器保留原始文本
+
+---
+
+### 11. DrawSVG — SVG 描边动画
+
+"绘制" SVG 路径的描边，从无到有或从有到无。
+
+**适用场景：** Logo 揭示、图标动画、品牌动效
+**三旋钮要求：** MOTION 6-9 / VARIANCE 4-7 / DENSITY 2-4
+
+```tsx
+"use client";
+import { useRef, useEffect } from "react";
+import { gsap } from "gsap";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+import { useReducedMotion } from "motion/react";
+
+gsap.registerPlugin(DrawSVGPlugin);
+
+export function SvgDraw({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    if (reduce || !ref.current) return;
+    const ctx = gsap.context(() => {
+      const paths = ref.current!.querySelectorAll("path, line, polyline, rect, ellipse");
+      gsap.from(paths, {
+        drawSVG: 0,
+        duration: 1.5,
+        stagger: 0.1,
+        ease: "power3.inOut",
+      });
+    }, ref);
+    return () => ctx.revert();
+  }, [reduce]);
+
+  return <div ref={ref}>{children}</div>;
+}
+```
+
+**关键点：**
+- 元素必须有 `stroke` + `stroke-width`（CSS 或 SVG 属性），否则无描边可画
+- `drawSVG: 0` = 从 0% 画到 100%
+- 仅影响描边，不影响填充
+- 单段 `<path>` 效果最好；多段路径在部分浏览器可能异常
+
+---
+
+### 12. Flip — FLIP 布局过渡
+
+从状态 A 到状态 B 的平滑过渡：记录 → 改 DOM → 动画。
+
+**适用场景：** 列表排序、网格切换、卡片展开/折叠、筛选重排
+**三旋钮要求：** MOTION 5-8 / VARIANCE 5-8 / DENSITY 3-6
+
+```tsx
+"use client";
+import { useRef, useState } from "react";
+import { gsap } from "gsap";
+import { Flip } from "gsap/Flip";
+
+gsap.registerPlugin(Flip);
+
+export function FlipGrid({ items }: { items: { id: string; label: string }[] }) {
+  const container = useRef<HTMLDivElement>(null);
+  const [order, setOrder] = useState(items);
+
+  const shuffle = () => {
+    if (!container.current) return;
+    const state = Flip.getState(".flip-item");  // 1. 记录当前状态
+    const shuffled = [...order].sort(() => Math.random() - 0.5);
+    setOrder(shuffled);  // 2. React 重渲染 → DOM 变更
+    // 3. Flip.from 在下一帧动画从旧状态到新状态
+    requestAnimationFrame(() => {
+      Flip.from(state, {
+        duration: 0.5,
+        ease: "power2.inOut",
+        absolute: true,  // 过渡期间用 position: absolute
+      });
+    });
+  };
+
+  return (
+    <div>
+      <button onClick={shuffle}>Shuffle</button>
+      <div ref={container} className="grid grid-cols-3 gap-4">
+        {order.map((item) => (
+          <div key={item.id} className="flip-item p-4 bg-white rounded-lg">
+            {item.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+**关键点：**
+- `Flip.getState()` 必须在 DOM 变更**之前**调用
+- `Flip.from()` 必须在 DOM 变更**之后**调用（`requestAnimationFrame` 或 `useLayoutEffect`）
+- `absolute: true` 让元素在过渡期间脱离文档流
+- Motion 的 `layout` prop 可替代简单场景，复杂场景用 Flip
+
+---
+
+### 13. quickTo — 高频鼠标跟随
+
+`gsap.quickTo()` 复用单个 tween，不创建新对象。鼠标跟随的正确答案。
+
+**适用场景：** 鼠标跟随、自定义光标、视差跟随
+**三旋钮要求：** MOTION 5-8 / VARIANCE 5-9 / DENSITY 2-5
+
+```tsx
+"use client";
+import { useRef, useEffect } from "react";
+import { gsap } from "gsap";
+
+export function MouseFollower() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const el = ref.current;
+    // ✅ 创建两个 quickTo 函数，复用同一个 tween
+    const xTo = gsap.quickTo(el, "x", { duration: 0.4, ease: "power3" });
+    const yTo = gsap.quickTo(el, "y", { duration: 0.4, ease: "power3" });
+
+    const onMove = (e: MouseEvent) => {
+      xTo(e.clientX);
+      yTo(e.clientY);
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      xTo.kill();
+      yTo.kill();
+    };
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className="fixed w-8 h-8 rounded-full bg-white/20 backdrop-blur pointer-events-none"
+      style={{ transform: "translate(-50%, -50%)" }}
+    />
+  );
+}
+```
+
+**关键点：**
+- `quickTo()` 返回函数，每次调用只更新目标值，不创建新 tween
+- ❌ 禁止在 mousemove 里 `gsap.to()`（每帧创建新 tween → 内存泄漏）
+- Motion 的 `useMotionValue` + `useTransform` 是等效替代
+
+---
+
+### 14. ScrollTrigger.batch — 批量滚动入场
+
+比 IntersectionObserver 更强大的批量触发，支持 stagger 编排。
+
+**适用场景：** 卡片网格入场、Logo 墙、功能列表
+**三旋钮要求：** MOTION 5-7 / VARIANCE 3-7 / DENSITY 3-6
+
+```tsx
+"use client";
+import { useRef, useEffect } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useReducedMotion } from "motion/react";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export function BatchReveal({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    if (reduce || !ref.current) return;
+    const ctx = gsap.context(() => {
+      ScrollTrigger.batch(".batch-item", {
+        onEnter: (elements) => {
+          gsap.from(elements, {
+            opacity: 0,
+            y: 30,
+            stagger: 0.08,
+            duration: 0.6,
+            ease: "power3.out",
+          });
+        },
+        start: "top 85%",
+        once: true,
+      });
+    }, ref);
+    return () => ctx.revert();
+  }, [reduce]);
+
+  return <div ref={ref}>{children}</div>;
+}
+```
+
+**关键点：**
+- 比 IntersectionObserver 更好：自动 stagger、GSAP ease、统一 cleanup
+- `batchMax` + `interval` 控制每批数量和时间窗口
+- 不要在 batch 回调中创建新的 ScrollTrigger（递归问题）
+
+---
+
 ## 动效纪律
 
 ### 禁用列表（硬禁止）

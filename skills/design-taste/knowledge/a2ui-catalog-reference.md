@@ -1,8 +1,10 @@
 ---
 knowledge: a2ui-catalog-reference
+status: preview
 description: >-
-  A2UI v1.0 Basic Catalog 快速参考 — 18 个基础组件 + 14 个基础函数的摘要。
+  [前瞻] A2UI v1.0 Basic Catalog 快速参考 — 18 个基础组件 + 14 个基础函数的摘要。
   供 Agent 生成 A2UI JSON 时查阅，无需记忆完整 Schema。
+  A2UI 协议尚未在 OpenClaw 中原生支持，此文件为前瞻性知识储备。
   完整 Schema 见：https://a2ui.org/specification/v1_0/catalogs/basic/catalog.json
 ---
 

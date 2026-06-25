@@ -1,3 +1,11 @@
+---
+knowledge: a2ui-mcp-integration
+status: preview
+description: >-
+  [前瞻] A2UI × MCP 集成指南 — 三种互补集成模式，围绕 application/a2ui+json 统一 MIME 类型。
+  A2UI 协议尚未在 OpenClaw 中原生支持，此文件为前瞻性知识储备。
+---
+
 # A2UI × MCP 集成指南
 
 > 融合自 [a2ui-project/a2ui](https://github.com/a2ui-project/a2ui) 三篇 MCP 集成指南

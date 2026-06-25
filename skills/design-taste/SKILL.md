@@ -1,17 +1,20 @@
 ---
 name: design-taste
+version: "9.0"
+upstream: "https://github.com/ilxu7z/oc-design-taste"
+synced: "2026-06-25T11:00:00+08:00"
 description: >-
-  设计品味校准框架 v8 · 鮱澄特化版 — 模块化架构 + A2UI 全量知识融合 + impeccable 融合增强。
+  设计品味校准框架 v9 · 鮱澄特化版 — 模块化架构 + A2UI 全量知识融合 + impeccable 融合增强 + GSAP 引擎深度融合。
   核心引擎：推理旋钮 + 纪律校准 + Domain 路由 + Register 判断 + AI Slop 检测。
   按需加载领域文件（domains/）、美学预设（profiles/）、组件库（libraries/）、知识层（knowledge/）。
-  适配：UI/前端/页面/画册/官网/生图/样式/排版/布局/重新设计/邮件/email/template/EDM/Dashboard/SaaS。
+  适配：UI/前端/页面/画册/官网/生图/样式/排版/布局/重新设计/邮件/email/template/EDM/Dashboard/SaaS/动效/animation/品牌/VI/Logo/配色。
 ---
-# Design Taste v8 — 设计品味校准框架 · 鮱澄特化版
+# Design Taste v9 — 设计品味校准框架 · 鮱澄特化版
 > **核心理念**：AI 输出的默认值 = 模板感、无品味。
 > 但规则不是死的——每条都有**适用场景**和**突破条件**。
 > 真正的品味 = 知道什么时候遵守规则，什么时候打破规则。
-> **v8 架构**：本文件 = **推理引擎**。规则按需从 domain/profile/library/knowledge 文件加载，不塞全量。
-> v8 增量：融合 impeccable 精华——Register 判断、Color Strategy 四步模型、AI Slop 动态检测、Motion 深度规范、Absolute Bans、交互八状态、排版/色彩/布局纪律增强。
+> **v9 架构**：本文件 = **推理引擎**。规则按需从 domain/profile/library/knowledge 文件加载，不塞全量。
+> v9 增量：v8 impeccable 精华 + GSAP 引擎深度融合（三旋钮映射/决策树/反模式/插件映射/ScrollTrigger 8 反模式/性能铁律/Framework 集成）。
 > 工作流：读信号 → 判断 Register → 选 Color Strategy → 调旋钮 → 路由 Domain → 写 Design Read → 按需加载 → 执行 → Pre-Flight → 交付。
 ---
 ## 0. Brief Inference（读前确认）
@@ -185,7 +188,7 @@ VISUAL_DENSITY: 4（标准密度，不拥挤不空旷）
 |------|---------|---------|
 | **1-3 静态** | 无自动动画，仅 CSS `:hover` / `:active` 状态 | 画册/打印材料、邮件模板 |
 | **4-7 流畅** | `transition 0.3s`、滚动入场、hover 微交互 | 官网、产品页——默认档位 |
-| **8-10 编排** | GSAP ScrollTrigger、视差、水平劫持滚动 | 用户明确要求"电影级""互动叙事" |
+| **8-10 编排** | GSAP ScrollTrigger scrub + pin + Timeline、视差、水平劫持滚动、SplitText/DrawSVG/MorphSVG | 用户明确要求"电影级""互动叙事" |
 | **⚠️ 声明 = 实现** | 设定 >4 但页面是静态的 → 输出失败 | 反之，做不了动效就把旋钮降到 ≤3 |
 | **⚠️ 必须有动机** | 每个动画必须一句话说清传达什么（层级/叙事/反馈/状态） | "看起来酷"不是理由 |
 #### VISUAL_DENSITY 档位
@@ -239,8 +242,10 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 ### 组件库/知识层按需加载
 | 需要什么 | 读取什么 |
 |---------|---------|
+| **知识层导航索引（先读我）** | `knowledge/INDEX.md` |
 | 高端组件模式参考 | `libraries/component-arsenal.md` |
 | 动效代码骨架 | `libraries/motion-patterns.md` |
+| GSAP 引擎深度融合（三旋钮映射/决策树/反模式/插件映射） | `knowledge/gsap-animation-engine.md` |
 | 布局模式参考 | `libraries/layout-patterns.md` |
 | 中文字体配对/排版细节 | `knowledge/font-pairings.md` |
 | 色彩禁令/替代方案/品牌色策略 | `knowledge/color-science.md` |
@@ -397,7 +402,16 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 - 死链接：禁止 `href="#"`，要么链接到真实地址，要么视觉禁用
 - 骨架屏 > 通用 spinner（预览内容形状，感觉更快）
 - 乐观更新：低风险操作（点赞、关注）立即显示成功，失败回滚
-### 4.H Motion 深度规范（从 impeccable animate.md 移植）
+### 4.H Motion 深度规范（从 impeccable animate.md 移植 + GSAP 融合）
+#### MOTION_INTENSITY → 引擎选择
+| MOTION 档位 | 引擎 | 说明 |
+|-------------|------|------|
+| 1-3 | CSS `transition` | hover/focus/active，无需 JS |
+| 4-5 | Motion（`motion/react`） | spring physics、whileInView、layout |
+| 6-7 | GSAP（轻量） | ScrollTrigger toggleActions / batch() |
+| 8-10 | GSAP（全量） | ScrollTrigger scrub + pin + Timeline 编排 |
+
+MOTION ≥6 时加载 `knowledge/gsap-animation-engine.md` 获取完整映射和陷阱规避。
 #### 时序规则（100/300/500 规则）
 | 时长 | 用途 | 示例 |
 |------|------|------|
@@ -407,7 +421,8 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 | **500-800ms** | 入场动画 | 页面加载、Hero 揭示 |
 #### Easing 曲线
 推荐：`ease-out-quart` `cubic-bezier(0.25, 1, 0.5, 1)` / `ease-out-quint` / `ease-out-expo`
-禁止：bounce / elastic
+GSAP 映射：`"power3.out"`（≈quart）/ `"power4.out"`（≈quint）/ `"expo.out"`（≈expo）
+禁止：bounce / elastic / `"none"`（交互反馈时）；`"none"`仅用于 ScrollTrigger scrub 绑定
 #### Motion Materials Palette
 - **Transform/opacity：** 移动、按压反馈、简单揭示
 - **Blur/filter/backdrop-filter：** 焦点拉远、深度、玻璃效果
@@ -558,6 +573,18 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 - [ ] 时序符合 100/300/500 规则
 - [ ] `prefers-reduced-motion` 已实现
 - [ ] 入场 > 退场（退场用 75% 时长）
+
+### 6.F2 GSAP 专项检查（MOTION ≥6 时）
+- [ ] MOTION ≥6 已加载 `knowledge/gsap-animation-engine.md`
+- [ ] GSAP 已注册：`gsap.registerPlugin(ScrollTrigger)` 等
+- [ ] 不存在 ST01-ST08 反模式（见 gsap-animation-engine §4）
+- [ ] ScrollTrigger 在顶层 Timeline/Tween 上，不在子 tween 内
+- [ ] `scrub` 和 `toggleActions` 未同时使用
+- [ ] `containerAnimation` 使用 `ease: "none"`
+- [ ] `markers: false`（无调试标记泄漏）
+- [ ] `gsap.context()` 或 `useGSAP()` + scope 清理已设置
+- [ ] `autoAlpha` 替代 `opacity`（除非需要保持可点击）
+- [ ] Framework 集成模式正确（React: useGSAP / Vue: onMounted+ctx.revert / Svelte: onMount return）
 ### 6.G 交互检查
 - [ ] 八状态齐全（Default/Hover/Focus/Active/Disabled/Loading/Error/Success）
 - [ ] Focus ring 用 `:focus-visible`，无 `outline: none` 无替代
@@ -623,11 +650,61 @@ Fraunces · Newsreader · Lora · Crimson · Crimson Pro · Crimson Text · Play
 5. **3D/WebGL 项目** — 超出 scope，建议 Three.js 专家
 6. **游戏 UI** — 超出 scope
 ---
-## 9. 版本与进化
-- **当前版本：** v8 · 鮱澄特化版 · impeccable 融合增强
+## 9. OpenClaw 工具使用指南
+
+本 skill 在 OpenClaw 环境中运行时，使用以下工具映射：
+
+| 任务 | 工具 | 说明 |
+|------|------|------|
+| 加载知识文件 | `read` | 按需读取 domains/libraries/knowledge/profiles 中的 .md 文件 |
+| 生成代码/HTML | `write` | 写入设计产出的代码文件 |
+| 生成图片 | `image` 或 `exec` | 调用生图 API（Kuai/SiliconFlow 等） |
+| 分析参考图 | `image` | 用视觉模型分析参考图片的设计特征 |
+| 检查已有设计 | `read` | 读取项目中的现有 CSS/HTML/组件文件 |
+| 运行构建/测试 | `exec` | 验证设计产出（如 `npx tailwindcss` 构建） |
+| 搜索设计参考 | `web_search` | 搜索设计趋势、配色方案、排版参考 |
+
+### 子 Agent 协作模式
+
+当设计任务涉及多领域（文案+代码+设计），按以下优先级决策：
+
+1. **纯设计任务**（单文件/≤200行）→ 自己执行，不派发
+2. **设计+代码**（多文件/复杂实现）→ 派 `sessions_spawn(agentId="sheji")` 或 `sessions_spawn(agentId="fengzhu")`
+3. **三省六部流程**（用户明确要求或决策门 #6-#9 触发）→ 走 Edict Dashboard pipeline
+
+### Token 预算感知
+
+本 skill 文件按需加载，预估 token 消耗：
+- SKILL.md（推理引擎）：~3,500 tokens
+- 单个 domain 文件：~1,300-5,100 tokens
+- 单个 knowledge 文件：~600-3,000 tokens
+- 单个 library 文件：~2,300-4,100 tokens
+- 单个 profile 文件：~500-4,000 tokens
+
+**加载策略**：先读 `knowledge/INDEX.md`（~600 tokens）确定需要哪些文件，再按需加载。
+---
+## 10. 版本与进化
+- **当前版本：** v9 · 鮱澄特化版 · impeccable 融合增强 + GSAP 引擎深度融合
 - **架构：** 核心引擎（本文件）+ domains/ + profiles/ + libraries/ + knowledge/
 - **自进化引擎：** `EVOLUTION.md` — 视觉自进化 v2，每次交付后复盘并更新
 - **备份：** v7 保存在 `SKILL.md.v5`（v7 原文已融合为 v8，v5 是最后一个完整备份）
+### v9.0 版本日志（2026-06-25）
+- 版本号统一 v9：合并 v8.1 + v8.2 全部增量
+- 新增 `knowledge/gsap-animation-engine.md`：10 章节 GSAP 深度融合（Motion 决策树、三旋钮精确映射、Easing 品味映射、ScrollTrigger 8 反模式、插件效果映射、性能铁律、Framework 集成、matchMedia + reduced-motion、autoAlpha 规则、水平滚动陷阱）
+- `libraries/motion-patterns.md` +224 行：5 个 GSAP 高级模式（SplitText/DrawSVG/Flip/quickTo/ScrollTrigger.batch）
+- §4.H 新增 MOTION → 引擎选择表（CSS / Motion / GSAP 精确路由）
+- §4.H Easing 曲线新增 GSAP ease name 映射（power3/4.out、expo.out）
+- §6 Pre-Flight 新增 §6.F2 GSAP 专项检查（10 项）
+- 初始化 CHANGELOG.md
+
+### v8.2 增量日志（2026-06-25）
+- §4.H 新增 MOTION → 引擎选择表（CSS / Motion / GSAP 精确路由）
+- §4.H Easing 曲线新增 GSAP ease name 映射（power3/4.out、expo.out）
+- §1 MOTION 8-10 档位补充插件能力列表（SplitText/DrawSVG/MorphSVG 等）
+- §2 路由表新增 knowledge/gsap-animation-engine.md 条目
+- §6 Pre-Flight 新增 GSAP 专项检查（MOTION≥6 时）
+- 新增 knowledge/gsap-animation-engine.md：10 章节深度融合（Motion 决策树、三旋钮精确映射、Easing 品味映射、ScrollTrigger 8 反模式、插件效果映射、性能铁律、Framework 集成、matchMedia + reduced-motion、autoAlpha 规则、水平滚动陷阱）
+
 ### v8.1 增量日志（2026-06-24）
 - 新增 knowledge/color-science.md §11：Color Strategy 四步模型详细参数（色面积百分比/策略选择流程/OKLCH实践/Alpha异味/有色背景vs纯灰/暗色模式色阶/Token层次）
 - 新增 knowledge/design-token-extraction.md：从代码反向提取设计 Token 的标准化流程（Discover/Identify/Plan/Extract四步）
